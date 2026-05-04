@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demo de Recomendaciones</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Sistema de recomendaciones</p>
+        <h1>Demo de usuarios y recomendaciones</h1>
+      </div>
+      <div class="topbar-controls">
+        <label class="field">
+          <span>API base</span>
+          <input id="apiBaseUrl" type="text" value="http://127.0.0.1:8000" aria-label="URL base de la API">
+        </label>
+        <label class="field inline">
+          <input id="debugToggle" type="checkbox">
+          <span>Mostrar JSON crudo</span>
+        </label>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="panel panel-left">
+        <div class="panel-header">
+          <div>
+            <h2>Usuarios</h2>
+            <p id="usersMeta">Cargando usuarios...</p>
+          </div>
+          <button id="reloadUsersBtn" class="button secondary" type="button">Recargar</button>
+        </div>
+
+        <div id="usersLoading" class="state">Cargando usuarios...</div>
+        <div id="usersError" class="state error hidden"></div>
+        <ul id="usersList" class="users-list" aria-label="Lista de usuarios"></ul>
+
+        <section class="history-panel">
+          <div class="panel-subheader">
+            <div>
+              <h3>Historial del usuario</h3>
+              <p id="historyMeta">Selecciona un usuario para ver lo que compró.</p>
+            </div>
+            <button id="reloadHistoryBtn" class="button secondary" type="button" disabled>Recargar historial</button>
+          </div>
+          <div id="historyLoading" class="state hidden">Cargando historial...</div>
+          <div id="historyError" class="state error hidden"></div>
+          <div id="historyEmpty" class="state">Sin historial todavía.</div>
+          <div id="historyList" class="history-list"></div>
+        </section>
+      </section>
+
+      <section class="panel panel-right">
+        <div class="panel-header">
+          <div>
+            <h2>Recomendaciones</h2>
+            <p id="selectedUserMeta">Selecciona un usuario para ver sus recomendaciones.</p>
+          </div>
+          <button id="reloadRecommendationsBtn" class="button secondary" type="button" disabled>Recargar</button>
+        </div>
+
+        <div id="recommendationsLoading" class="state hidden">Cargando recomendaciones...</div>
+        <div id="recommendationsError" class="state error hidden"></div>
+        <div id="emptyRecommendations" class="state">No hay recomendaciones todavia.</div>
+
+        <div id="recommendationsGrid" class="cards-grid"></div>
+
+        <section id="debugSection" class="debug hidden" aria-label="JSON crudo">
+          <h3>JSON crudo</h3>
+          <pre id="debugOutput">{}</pre>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

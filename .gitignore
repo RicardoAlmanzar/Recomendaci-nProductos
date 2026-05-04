@@ -1,0 +1,17 @@
+.env
+.git-index-temp
+.git-index-temp2
+commit-hash.txt
+staged-files.txt
+tree-hash.txt
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+*.log.env
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+.venv/
