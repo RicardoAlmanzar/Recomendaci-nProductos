@@ -7,13 +7,14 @@ Los 11 módulos, priorizados realmente
 Te los agrupo en tres tiers según qué hacer con cada uno en los próximos 6-12 meses:
 TIER 1 — Construir bien desde ya (meses 1-3)
 Estos son los que si los haces mal o los pospones, todo lo demás se rompe.
-Módulo 1: Catálogo
+
+Módulo 1: Catálogo ✅
 
 Modelo de datos con: producto, variantes, categoría jerárquica (no plana), atributos en JSONB para flexibilidad, multi-vendor desde el inicio (aunque arranques con uno solo).
 Por qué ahora: cambiar el modelo del catálogo después es brutal. Si arrancas con tabla plana de productos, en mes 8 vas a estar reescribiendo medio sistema.
 Tu estado actual: tienes 15 productos planos. Necesitas rediseñar.
 
-Módulo 2: Identidad y sesiones
+Módulo 2: Identidad y sesiones ✅
 
 user_id (logueado) + session_id (anónimo persistente vía cookie/localStorage). Lógica de merge cuando un anónimo se loguea.
 Por qué ahora: el 60-80% del tracking de un marketplace es de usuarios anónimos. Si solo trackeas logueados, perdiste la mayoría de la señal.
