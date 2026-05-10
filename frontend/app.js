@@ -99,7 +99,7 @@ function renderRecommendations(payload) {
   elements.recommendationsGrid.innerHTML = '';
   elements.debugOutput.textContent = JSON.stringify(payload, null, 2);
 
-  if (!payload || !payload.recommendations || payload.recommendations.length === 0) {
+  if (!payload || !payload.items || payload.items.length === 0) {
     elements.emptyRecommendations.classList.remove('hidden');
     elements.emptyRecommendations.textContent = 'Este usuario no tiene recomendaciones.';
     return;
@@ -107,7 +107,7 @@ function renderRecommendations(payload) {
 
   elements.emptyRecommendations.classList.add('hidden');
 
-  payload.recommendations.forEach((item) => {
+  payload.items.forEach((item) => {
     const card = document.createElement('article');
     card.className = 'card recommendation-card';
 
@@ -136,25 +136,14 @@ function renderRecommendations(payload) {
 }
 
 function buildRecommendationExplanation(item) {
-  const explanation = item.explanation || {};
-  const matchedRules = explanation.matched_rules || [];
-  const rulesHtml = matchedRules.length
-    ? `<ul class="reason-list">${matchedRules
-        .map(
-          (rule) => `<li>${rule.reason_code}: ${rule.source_category} → ${rule.target_category} (+${rule.weight})</li>`,
-        )
-        .join('')}</ul>`
-    : '<p class="user-meta">Sin reglas aplicadas.</p>';
+  const reasons = item.reason_codes || [];
+  const rulesHtml = reasons.length
+    ? `<ul class="reason-list">${reasons.map((r) => `<li>${r}</li>`).join('')}</ul>`
+    : '<p class="user-meta">Sin razones específicas.</p>';
 
   return `
-    <p><strong>Score final:</strong> ${explanation.final_score ?? item.score}</p>
-    <ul class="calc-list">
-      <li><strong>Reglas:</strong> ${formatNumber(explanation.rule_score ?? 0)}</li>
-      <li><strong>Margen:</strong> ${formatNumber(explanation.margin_boost ?? 0)}</li>
-      <li><strong>Prioridad estratégica:</strong> ${formatNumber(explanation.strategic_boost ?? 0)}</li>
-    </ul>
-    <p class="calc-formula">${explanation.formula || `${formatNumber(explanation.rule_score ?? 0)} + ${formatNumber(explanation.margin_boost ?? 0)} + ${formatNumber(explanation.strategic_boost ?? 0)} = ${formatNumber(explanation.final_score ?? item.score)}`}</p>
-    <p class="user-meta"><strong>Razón simple:</strong> este producto quedó arriba porque coincide con las compras del cliente y además tiene buen margen/prioridad.</p>
+    <p><strong>Score final:</strong> ${formatNumber(item.score)}</p>
+    <p class="user-meta"><strong>Razones (Reason Codes):</strong></p>
     ${rulesHtml}
   `;
 }
@@ -280,13 +269,20 @@ async function loadRecommendations() {
       },
       body: JSON.stringify({
         customer_id: state.selectedUser.customer_id,
+        page_type: "homepage",
+        slot: "hero",
         limit: 5,
       }),
     });
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => null);
-      const message = errorData?.detail || `Error al cargar recomendaciones: ${response.status}`;
+      let message = `Error al cargar recomendaciones: ${response.status}`;
+      if (errorData?.detail) {
+        message = Array.isArray(errorData.detail) 
+          ? errorData.detail.map(e => `${e.loc.join('.')}: ${e.msg}`).join(', ') 
+          : errorData.detail;
+      }
       throw new Error(message);
     }
 
