@@ -5,6 +5,11 @@ Antes de los módulos, tres principios no negociables. Si los rompes, el plan se
 3. Logguea ahora, modela después. No necesitas ML en mes 1. Necesitas datos limpios para entrenarlo en mes 6. La trampa más común es pasarse meses con un modelo malo en lugar de acumular datos buenos.
 Los 11 módulos, priorizados realmente
 Te los agrupo en tres tiers según qué hacer con cada uno en los próximos 6-12 meses:
+
+**ESTADO FASE 1: COMPLETADA ✅ (2026-05-09)**
+La Fase 1 incluye los Módulos 1, 2, 3 y 11. Con esta fase terminada, el sistema ahora tiene la capacidad de:
+Recibir eventos de comportamiento, generar recomendaciones con score, trackear el CTR mediante `recommendation_id`, y cachear las respuestas para alto rendimiento.
+
 TIER 1 — Construir bien desde ya (meses 1-3)
 Estos son los que si los haces mal o los pospones, todo lo demás se rompe.
 
@@ -20,14 +25,14 @@ user_id (logueado) + session_id (anónimo persistente vía cookie/localStorage).
 Por qué ahora: el 60-80% del tracking de un marketplace es de usuarios anónimos. Si solo trackeas logueados, perdiste la mayoría de la señal.
 Tu estado actual: probablemente solo tienes usuario logueado. Hay trabajo aquí.
 
-Módulo 3: Event tracking
+Módulo 3: Event tracking ✅
 
 Tabla de eventos con schema versionado: event_id, event_type, user_id, session_id, entity_type, entity_id, properties (JSONB), timestamp, schema_version.
 Eventos mínimos a capturar: product_view, product_click, search, add_to_cart, purchase, recommendation_shown, recommendation_clicked.
 Por qué ahora: literalmente el activo más valioso. Sin esto no hay ML, no hay métricas, no hay A/B test.
 Tu estado actual: parcial/faltante. Esto es lo más urgente.
 
-Módulo 11: Servicio y entrega (API)
+Módulo 11: Servicio y entrega (API) ✅
 
 Endpoint /recommendations con contratos claros: contexto de entrada (user, session, page_type, slot), respuesta estructurada (lista de items + metadata para tracking).
 Caching desde el inicio (Redis o el cache de Supabase).

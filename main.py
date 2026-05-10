@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.db.session import init_db
 from app.routes.clientes import router as customers_router, users_router
 from app.routes.recomendaciones import router as recommendations_router
+from app.routes.events import router as events_router
 
 
 @asynccontextmanager
@@ -25,6 +26,7 @@ app.add_middleware(
 app.include_router(customers_router)
 app.include_router(users_router)
 app.include_router(recommendations_router)
+app.include_router(events_router)
 
 
 @app.get("/")

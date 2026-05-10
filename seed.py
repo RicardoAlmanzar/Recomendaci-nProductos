@@ -2,6 +2,8 @@ from sqlmodel import Session, select
 
 from app.db.session import engine, init_db
 from app.models import Compra, Cliente, Producto, Regla
+from app.models.event import Event  # noqa: F401 — necesario para que init_db() cree la tabla events
+
 
 
 def _ensure_customer(session: Session, customer: Cliente) -> None:
