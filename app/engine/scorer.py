@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from datetime import datetime
 
-from app.engine.rules import ScoreSlot, add_margin_boost
+from app.engine.rules import ScoreSlot, add_margin_boost, add_newness_boost
 from app.models import Compra, Cliente, Producto, Regla
 
 
@@ -13,7 +13,10 @@ def build_recommendations(
 	affinity_rules: Sequence[Regla],
 	purchases: Sequence[Compra],
 	limit: int,
+	popularity_scores: dict[str, float] | None = None,
 ):
+	if popularity_scores is None:
+		popularity_scores = {}
 	purchased_product_ids = {purchase.product_id for purchase in purchases}
 	product_category_by_id = {product.product_id: product.category for product in catalog}
 	purchased_categories = {
@@ -21,6 +24,9 @@ def build_recommendations(
 		for product_id in purchased_product_ids
 		if product_id in product_category_by_id
 	}
+
+	# ── Detectar cold-start — Módulo 7 ──────────────────────────────────
+	is_cold_start = len(purchased_product_ids) == 0
 
 	score_map: dict[str, ScoreSlot] = {}
 
@@ -53,6 +59,23 @@ def build_recommendations(
 	for slot in score_map.values():
 		add_margin_boost(slot)
 
+	# ── Boost por novedad — Módulo 7 ────────────────────────────────────
+	now = datetime.utcnow()
+	for slot in score_map.values():
+		add_newness_boost(slot, now=now)
+
+	# ── Cold-start: popularidad como fallback — Módulo 7 ────────────────
+	if is_cold_start:
+		for slot in score_map.values():
+			pop_score = popularity_scores.get(slot.product.product_id, 0.0)
+			if pop_score > 0:
+				pop_boost = round(pop_score * 0.25, 4)  # Max boost = 0.25
+				slot.popularity_boost += pop_boost
+				slot.score += pop_boost
+				slot.reason_codes.add("COLD_START_POPULAR")
+			elif slot.score > 0:
+				slot.reason_codes.add("COLD_START")
+
 	recommendations = sorted(
 		[slot for slot in score_map.values() if slot.score > 0],
 		key=lambda slot: slot.score,
@@ -70,8 +93,14 @@ def build_recommendations(
 				"rule_score": round(slot.rule_score, 4),
 				"margin_boost": round(slot.margin_boost, 4),
 				"strategic_boost": round(slot.strategic_boost, 4),
+				"newness_boost": round(slot.newness_boost, 4),
+				"popularity_boost": round(slot.popularity_boost, 4),
 				"final_score": round(slot.score, 4),
-				"formula": f"{round(slot.rule_score, 4)} + {round(slot.margin_boost, 4)} + {round(slot.strategic_boost, 4)} = {round(slot.score, 4)}",
+				"formula": (
+					f"{round(slot.rule_score, 4)} + {round(slot.margin_boost, 4)}"
+					f" + {round(slot.strategic_boost, 4)} + {round(slot.newness_boost, 4)}"
+					f" + {round(slot.popularity_boost, 4)} = {round(slot.score, 4)}"
+				),
 				"matched_rules": slot.matched_rules,
 			},
 		}

@@ -15,6 +15,7 @@ from app.db.session import get_session
 from app.engine.cache import cache
 from app.engine.candidates import get_candidates
 from app.engine.ranker import RankingContext, rank
+from app.engine.popularity import get_popularity_scores
 from app.models import Cliente, Compra, Regla
 from app.models.recommendation import (
     RecommendationItem,
@@ -59,11 +60,17 @@ def recommend(
         select(Compra).where(Compra.customer_id == request.customer_id)
     ).all()
 
+    # ── Módulo 7: Cold-start popularity ─────────────────────────────────
+    popularity_scores = {}
+    if len(purchases) == 0:
+        popularity_scores = get_popularity_scores(session)
+
     ranking_context = RankingContext(
         customer=customer,
         purchases=purchases,
         affinity_rules=affinity_rules,
         limit=request.limit,
+        popularity_scores=popularity_scores,
         page_type=request.page_type,
         slot=request.slot,
         session_id=request.session_id,

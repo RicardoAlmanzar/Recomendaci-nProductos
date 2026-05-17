@@ -43,12 +43,21 @@ class RankingContext:
     affinity_rules: Sequence[Regla]
     limit: int = 10
 
+    # ── Módulo 7: cold-start ────────────────────────────────────────────
+    # Auto-detectado en __post_init__ cuando el cliente no tiene compras.
+    is_cold_start: bool = False
+    popularity_scores: dict[str, float] = field(default_factory=dict)
+
     # Metadatos del request — útiles para estrategias futuras de ranking
     # (ej. ponderar distinto en homepage vs cart, o por slot).
     page_type: Optional[str] = None
     slot: Optional[str] = None
     session_id: Optional[str] = None
     request_context: Optional[dict[str, Any]] = field(default=None)
+
+    def __post_init__(self):
+        if not self.is_cold_start and len(self.purchases) == 0:
+            self.is_cold_start = True
 
 
 # ---------------------------------------------------------------------------
@@ -82,4 +91,5 @@ def rank(
         affinity_rules=context.affinity_rules,
         purchases=context.purchases,
         limit=context.limit,
+        popularity_scores=context.popularity_scores,
     )
