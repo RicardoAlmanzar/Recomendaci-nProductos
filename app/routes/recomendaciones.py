@@ -14,7 +14,7 @@ from sqlmodel import Session, select
 from app.db.session import get_session
 from app.engine.cache import cache
 from app.engine.candidates import get_candidates
-from app.engine.ranker import rank
+from app.engine.ranker import RankingContext, rank
 from app.models import Cliente, Compra, Regla
 from app.models.recommendation import (
     RecommendationItem,
@@ -53,19 +53,24 @@ def recommend(
     # ── 3. Candidatos ───────────────────────────────────────────────────
     candidates = get_candidates(request, session)
 
-    # ── 4. Ranking ──────────────────────────────────────────────────────
+    # ── 4. Ranking (Módulo 5) ───────────────────────────────────────────
     affinity_rules = session.exec(select(Regla)).all()
     purchases = session.exec(
         select(Compra).where(Compra.customer_id == request.customer_id)
     ).all()
 
-    ranked = rank(
-        candidates=candidates,
+    ranking_context = RankingContext(
         customer=customer,
-        affinity_rules=affinity_rules,
         purchases=purchases,
+        affinity_rules=affinity_rules,
         limit=request.limit,
+        page_type=request.page_type,
+        slot=request.slot,
+        session_id=request.session_id,
+        request_context=request.context,
     )
+
+    ranked = rank(candidates=candidates, context=ranking_context)
 
     # ── 5. Construir items con category y rank_position ─────────────────
     # Mapa rápido product_id → category desde los candidatos cargados
