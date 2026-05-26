@@ -20,14 +20,14 @@ user_id (logueado) + session_id (anónimo persistente vía cookie/localStorage).
 Por qué ahora: el 60-80% del tracking de un marketplace es de usuarios anónimos. Si solo trackeas logueados, perdiste la mayoría de la señal.
 Tu estado actual: probablemente solo tienes usuario logueado. Hay trabajo aquí.
 
-Módulo 3: Event tracking
+Módulo 3: Event tracking ✅
 
 Tabla de eventos con schema versionado: event_id, event_type, user_id, session_id, entity_type, entity_id, properties (JSONB), timestamp, schema_version.
 Eventos mínimos a capturar: product_view, product_click, search, add_to_cart, purchase, recommendation_shown, recommendation_clicked.
 Por qué ahora: literalmente el activo más valioso. Sin esto no hay ML, no hay métricas, no hay A/B test.
 Tu estado actual: parcial/faltante. Esto es lo más urgente.
 
-Módulo 11: Servicio y entrega (API)
+Módulo 11: Servicio y entrega (API) ✅
 
 Endpoint /recommendations con contratos claros: contexto de entrada (user, session, page_type, slot), respuesta estructurada (lista de items + metadata para tracking).
 Caching desde el inicio (Redis o el cache de Supabase).
@@ -41,13 +41,13 @@ Hoy: reglas + popularidad + co-compra básica (productos comprados juntos).
 Interfaz: función get_candidates(context) → List[product_id].
 Después: agregas similitud por embeddings, candidatos por categoría, etc. Sin tocar el ranker.
 
-Módulo 5: Ranking
+Módulo 5: Ranking ✅
 
 Hoy: tu motor actual de score con boosts por margen y prioridad.
 Interfaz: función rank(candidates, context) → ordered_list.
 Después: lo reemplazas por un modelo learning-to-rank cuando tengas datos suficientes (típicamente 50k-100k eventos de interacción).
 
-Módulo 7: Cold-start
+Módulo 7: Cold-start ✅
 
 Hoy: para usuario nuevo → top productos populares por categoría. Para producto nuevo → recomendarlo en su categoría con boost temporal.
 Es simple pero explícito. La trampa es no pensarlo y que tu sistema no recomiende nada a usuarios nuevos.
