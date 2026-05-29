@@ -52,7 +52,7 @@ Módulo 7: Cold-start ✅
 Hoy: para usuario nuevo → top productos populares por categoría. Para producto nuevo → recomendarlo en su categoría con boost temporal.
 Es simple pero explícito. La trampa es no pensarlo y que tu sistema no recomiende nada a usuarios nuevos.
 
-Módulo 8: Feedback loop
+Módulo 8: Feedback loop ✅
 
 Hoy: solo capturas implícito (clicks en recomendaciones, gracias al módulo 3).
 Después: agregas explícito (like/hide/no me interesa) cuando el producto lo justifique.
