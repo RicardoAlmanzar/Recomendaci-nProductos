@@ -3,6 +3,9 @@ const state = {
   selectedUser: null,
   lastRecommendations: null,
   purchaseHistory: null,
+  shownRecommendationIds: new Set(),
+  clickedProductIds: new Set(),
+  pendingFeedback: new Set(),
 };
 
 const elements = {};
@@ -25,6 +28,7 @@ function cacheElements() {
   elements.historyList = document.getElementById('historyList');
   elements.recommendationsLoading = document.getElementById('recommendationsLoading');
   elements.recommendationsError = document.getElementById('recommendationsError');
+  elements.feedbackStatus = document.getElementById('feedbackStatus');
   elements.emptyRecommendations = document.getElementById('emptyRecommendations');
   elements.recommendationsGrid = document.getElementById('recommendationsGrid');
   elements.debugSection = document.getElementById('debugSection');
@@ -70,6 +74,17 @@ function clearError(element) {
   element.classList.add('hidden');
 }
 
+function setFeedbackStatus(message, tone = 'info') {
+  elements.feedbackStatus.textContent = message;
+  elements.feedbackStatus.className = `state feedback-state ${tone}`;
+  elements.feedbackStatus.classList.remove('hidden');
+}
+
+function clearFeedbackStatus() {
+  elements.feedbackStatus.textContent = '';
+  elements.feedbackStatus.classList.add('hidden');
+}
+
 function renderUsers() {
   elements.usersList.innerHTML = '';
 
@@ -113,8 +128,9 @@ function renderRecommendations(payload) {
 
     const button = document.createElement('button');
     button.type = 'button';
+    button.className = 'recommendation-main';
     button.innerHTML = `
-      <div class="score">Score ${item.score}</div>
+      <div class="score">Score ${formatNumber(item.score)}</div>
       <h3>${item.name}</h3>
       <p class="user-meta">SKU: ${item.sku}</p>
       <p class="user-meta">Producto: ${item.product_id}</p>
@@ -127,12 +143,38 @@ function renderRecommendations(payload) {
 
     button.addEventListener('click', () => {
       details.classList.toggle('hidden');
+      trackRecommendationClick(item);
     });
 
     card.appendChild(button);
     card.appendChild(details);
+    card.appendChild(buildFeedbackActions(item));
     elements.recommendationsGrid.appendChild(card);
   });
+}
+
+function buildFeedbackActions(item) {
+  const actions = document.createElement('div');
+  actions.className = 'feedback-actions';
+
+  [
+    ['like', 'Me gusta'],
+    ['not_interested', 'No me interesa'],
+    ['hide', 'Ocultar'],
+    ['dislike', 'No encaja'],
+  ].forEach(([feedbackType, label]) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = `feedback-button ${feedbackType}`;
+    button.textContent = label;
+    button.addEventListener('click', (event) => {
+      event.stopPropagation();
+      sendFeedback(item, feedbackType);
+    });
+    actions.appendChild(button);
+  });
+
+  return actions;
 }
 
 function buildRecommendationExplanation(item) {
@@ -149,7 +191,7 @@ function buildRecommendationExplanation(item) {
 }
 
 function formatNumber(value) {
-  return Number(value || 0).toFixed(4).replace(/\.0+$/, '').replace(/(\.\d*[1-9])0+$/, '$1');
+  return Number(value || 0).toFixed(4);
 }
 
 function renderHistory(historyPayload) {
@@ -217,6 +259,10 @@ async function selectUser(userId) {
   state.selectedUser = user;
   state.lastRecommendations = null;
   state.purchaseHistory = null;
+  state.shownRecommendationIds.clear();
+  state.clickedProductIds.clear();
+  state.pendingFeedback.clear();
+  clearFeedbackStatus();
   renderUsers();
 
   elements.selectedUserMeta.textContent = `Usuario seleccionado: ${user.customer_id} · ${user.business_type} · ${user.city}`;
@@ -251,12 +297,15 @@ async function loadHistory() {
   }
 }
 
-async function loadRecommendations() {
+async function loadRecommendations(options = {}) {
   if (!state.selectedUser) {
     return;
   }
 
   clearError(elements.recommendationsError);
+  if (!options.preserveFeedbackStatus) {
+    clearFeedbackStatus();
+  }
   elements.emptyRecommendations.classList.add('hidden');
   elements.recommendationsGrid.innerHTML = '';
   setLoading(elements.recommendationsLoading, true, 'Cargando recomendaciones...');
@@ -288,11 +337,131 @@ async function loadRecommendations() {
 
     state.lastRecommendations = await response.json();
     renderRecommendations(state.lastRecommendations);
+    await trackRecommendationShown(state.lastRecommendations);
   } catch (error) {
     setError(elements.recommendationsError, error.message || 'No se pudieron cargar las recomendaciones.');
     elements.recommendationsGrid.innerHTML = '';
   } finally {
     elements.recommendationsLoading.classList.add('hidden');
+  }
+}
+
+async function postEvent(payload) {
+  const response = await fetch(`${getApiBaseUrl()}/events`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    const detail = errorData?.detail || `Error ${response.status} registrando evento`;
+    const message = Array.isArray(detail)
+      ? detail.map((item) => item.msg || JSON.stringify(item)).join(', ')
+      : detail;
+    throw new Error(message);
+  }
+
+  return response.json();
+}
+
+async function trackRecommendationShown(payload) {
+  if (!state.selectedUser || !payload?.recommendation_id || state.shownRecommendationIds.has(payload.recommendation_id)) {
+    return;
+  }
+
+  state.shownRecommendationIds.add(payload.recommendation_id);
+
+  try {
+    await postEvent({
+      event_type: 'recommendation_shown',
+      customer_id: state.selectedUser.customer_id,
+      entity_type: 'recommendation',
+      entity_id: payload.recommendation_id,
+      properties: {
+        slot: payload.slot,
+        page_type: payload.page_type,
+        item_count: payload.items.length,
+        items: payload.items.map((item) => ({
+          product_id: item.product_id,
+          rank_position: item.rank_position,
+          score: item.score,
+        })),
+      },
+    });
+  } catch (error) {
+    setFeedbackStatus(error.message || 'No se pudo registrar la impresion.', 'error');
+  }
+}
+
+async function trackRecommendationClick(item) {
+  if (!state.selectedUser || !state.lastRecommendations?.recommendation_id) {
+    return;
+  }
+
+  const clickKey = `${state.lastRecommendations.recommendation_id}:${item.product_id}`;
+  if (state.clickedProductIds.has(clickKey)) {
+    return;
+  }
+  state.clickedProductIds.add(clickKey);
+
+  try {
+    await postEvent({
+      event_type: 'recommendation_clicked',
+      customer_id: state.selectedUser.customer_id,
+      entity_type: 'recommendation',
+      entity_id: state.lastRecommendations.recommendation_id,
+      properties: {
+        product_id: item.product_id,
+        rank_position: item.rank_position,
+        slot: state.lastRecommendations.slot,
+        page_type: state.lastRecommendations.page_type,
+      },
+    });
+  } catch (error) {
+    setFeedbackStatus(error.message || 'No se pudo registrar el click.', 'error');
+  }
+}
+
+async function sendFeedback(item, feedbackType) {
+  if (!state.selectedUser || !state.lastRecommendations?.recommendation_id) {
+    return;
+  }
+
+  const feedbackKey = `${state.lastRecommendations.recommendation_id}:${item.product_id}:${feedbackType}`;
+  if (state.pendingFeedback.has(feedbackKey)) {
+    return;
+  }
+
+  state.pendingFeedback.add(feedbackKey);
+  setFeedbackStatus(`Guardando feedback para ${item.product_id}...`, 'info');
+
+  try {
+    await postEvent({
+      event_type: 'recommendation_feedback',
+      customer_id: state.selectedUser.customer_id,
+      entity_type: 'recommendation',
+      entity_id: state.lastRecommendations.recommendation_id,
+      properties: {
+        product_id: item.product_id,
+        feedback_type: feedbackType,
+        rank_position: item.rank_position,
+        slot: state.lastRecommendations.slot,
+        page_type: state.lastRecommendations.page_type,
+      },
+    });
+
+    const message = feedbackType === 'hide'
+      ? 'Producto ocultado. Recalculando recomendaciones...'
+      : 'Feedback guardado. Recalculando recomendaciones...';
+    setFeedbackStatus(message, 'success');
+    await loadRecommendations({ preserveFeedbackStatus: true });
+  } catch (error) {
+    setFeedbackStatus(error.message || 'No se pudo guardar el feedback.', 'error');
+  } finally {
+    state.pendingFeedback.delete(feedbackKey);
   }
 }
 

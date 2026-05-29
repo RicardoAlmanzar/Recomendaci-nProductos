@@ -3,6 +3,8 @@ from __future__ import annotations
 from collections.abc import Sequence
 from datetime import datetime
 
+from app.engine.feedback import FeedbackSignals
+from app.engine.formatting import round_score
 from app.engine.rules import ScoreSlot, add_margin_boost, add_newness_boost
 from app.models import Compra, Cliente, Producto, Regla
 
@@ -14,9 +16,12 @@ def build_recommendations(
 	purchases: Sequence[Compra],
 	limit: int,
 	popularity_scores: dict[str, float] | None = None,
+	feedback_signals: FeedbackSignals | None = None,
 ):
 	if popularity_scores is None:
 		popularity_scores = {}
+	if feedback_signals is None:
+		feedback_signals = FeedbackSignals()
 	purchased_product_ids = {purchase.product_id for purchase in purchases}
 	product_category_by_id = {product.product_id: product.category for product in catalog}
 	purchased_categories = {
@@ -32,6 +37,8 @@ def build_recommendations(
 
 	for product in catalog:
 		if not product.active or product.product_id in purchased_product_ids:
+			continue
+		if product.product_id in feedback_signals.excluded_product_ids:
 			continue
 
 		score_map[product.product_id] = ScoreSlot(product=product)
@@ -50,7 +57,7 @@ def build_recommendations(
 			slot.matched_rules.append(
 				{
 					"reason_code": rule.reason_code,
-					"weight": round(float(rule.weight), 4),
+					"weight": round_score(rule.weight),
 					"source_category": rule.source_category,
 					"target_category": rule.target_category,
 				}
@@ -69,12 +76,21 @@ def build_recommendations(
 		for slot in score_map.values():
 			pop_score = popularity_scores.get(slot.product.product_id, 0.0)
 			if pop_score > 0:
-				pop_boost = round(pop_score * 0.25, 4)  # Max boost = 0.25
+				pop_boost = round_score(pop_score * 0.25)  # Max boost = 0.25
 				slot.popularity_boost += pop_boost
 				slot.score += pop_boost
 				slot.reason_codes.add("COLD_START_POPULAR")
 			elif slot.score > 0:
 				slot.reason_codes.add("COLD_START")
+
+	for slot in score_map.values():
+		feedback_adjustment = feedback_signals.adjustment_for(slot.product.product_id)
+		if feedback_adjustment == 0:
+			continue
+
+		slot.feedback_adjustment += feedback_adjustment
+		slot.score += feedback_adjustment
+		slot.reason_codes.update(feedback_signals.reason_codes_for(slot.product.product_id))
 
 	recommendations = sorted(
 		[slot for slot in score_map.values() if slot.score > 0],
@@ -87,19 +103,21 @@ def build_recommendations(
 			"product_id": slot.product.product_id,
 			"sku": slot.product.sku,
 			"name": slot.product.name,
-			"score": round(slot.score, 4),
+			"score": round_score(slot.score),
 			"reason_codes": sorted(slot.reason_codes),
 			"explanation": {
-				"rule_score": round(slot.rule_score, 4),
-				"margin_boost": round(slot.margin_boost, 4),
-				"strategic_boost": round(slot.strategic_boost, 4),
-				"newness_boost": round(slot.newness_boost, 4),
-				"popularity_boost": round(slot.popularity_boost, 4),
-				"final_score": round(slot.score, 4),
+				"rule_score": round_score(slot.rule_score),
+				"margin_boost": round_score(slot.margin_boost),
+				"strategic_boost": round_score(slot.strategic_boost),
+				"newness_boost": round_score(slot.newness_boost),
+				"popularity_boost": round_score(slot.popularity_boost),
+				"feedback_adjustment": round_score(slot.feedback_adjustment),
+				"final_score": round_score(slot.score),
 				"formula": (
-					f"{round(slot.rule_score, 4)} + {round(slot.margin_boost, 4)}"
-					f" + {round(slot.strategic_boost, 4)} + {round(slot.newness_boost, 4)}"
-					f" + {round(slot.popularity_boost, 4)} = {round(slot.score, 4)}"
+					f"{round_score(slot.rule_score):.4f} + {round_score(slot.margin_boost):.4f}"
+					f" + {round_score(slot.strategic_boost):.4f} + {round_score(slot.newness_boost):.4f}"
+					f" + {round_score(slot.popularity_boost):.4f} + {round_score(slot.feedback_adjustment):.4f}"
+					f" = {round_score(slot.score):.4f}"
 				),
 				"matched_rules": slot.matched_rules,
 			},

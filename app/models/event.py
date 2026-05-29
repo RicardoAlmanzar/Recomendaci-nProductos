@@ -20,6 +20,7 @@ class EventType(str, Enum):
     purchase = "purchase"
     recommendation_shown = "recommendation_shown"
     recommendation_clicked = "recommendation_clicked"
+    recommendation_feedback = "recommendation_feedback"
 
 
 # ---------------------------------------------------------------------------

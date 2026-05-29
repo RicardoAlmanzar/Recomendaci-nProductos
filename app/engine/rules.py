@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime
 
+from app.engine.formatting import round_score
 
 MAX_MARGIN_REFERENCE = 0.4
 
@@ -20,6 +21,7 @@ class ScoreSlot:
 	strategic_boost: float = 0.0
 	newness_boost: float = 0.0
 	popularity_boost: float = 0.0
+	feedback_adjustment: float = 0.0
 	reason_codes: set[str] = field(default_factory=set)
 	matched_rules: list[dict] = field(default_factory=list)
 
@@ -68,7 +70,7 @@ def add_newness_boost(
 
 	if age_days <= window_days:
 		freshness = 1.0 - (age_days / window_days)
-		boost = round(freshness * NEWNESS_MAX_BOOST, 4)
+		boost = round_score(freshness * NEWNESS_MAX_BOOST)
 		slot.newness_boost += boost
 		slot.score += boost
 		slot.reason_codes.add("NEW_PRODUCT")

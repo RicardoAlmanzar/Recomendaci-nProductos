@@ -14,6 +14,7 @@ from sqlmodel import Session, select
 from app.db.session import get_session
 from app.engine.cache import cache
 from app.engine.candidates import get_candidates
+from app.engine.feedback import get_feedback_signals
 from app.engine.ranker import RankingContext, rank
 from app.engine.popularity import get_popularity_scores
 from app.models import Cliente, Compra, Regla
@@ -64,6 +65,11 @@ def recommend(
     popularity_scores = {}
     if len(purchases) == 0:
         popularity_scores = get_popularity_scores(session)
+    feedback_signals = get_feedback_signals(
+        customer_id=request.customer_id,
+        session_id=request.session_id,
+        session=session,
+    )
 
     ranking_context = RankingContext(
         customer=customer,
@@ -71,6 +77,7 @@ def recommend(
         affinity_rules=affinity_rules,
         limit=request.limit,
         popularity_scores=popularity_scores,
+        feedback_signals=feedback_signals,
         page_type=request.page_type,
         slot=request.slot,
         session_id=request.session_id,

@@ -1,5 +1,7 @@
 from datetime import datetime, timedelta
 from sqlmodel import Session, select, func
+
+from app.engine.formatting import round_score
 from app.models.compra import Compra
 from app.models.producto import Producto
 
@@ -31,7 +33,7 @@ def get_popularity_scores(session: Session, window_days: int = 90) -> dict[str, 
         return {}
         
     # Normalizar entre 0 y 1
-    return {product_id: count / max_count for product_id, count in counts.items()}
+    return {product_id: round_score(count / max_count) for product_id, count in counts.items()}
 
 
 def get_popular_product_ids(
