@@ -52,6 +52,49 @@ def _validate_recommendation_feedback(payload: EventCreate) -> None:
         )
 
 
+def _validate_recommendation_clicked(payload: EventCreate) -> None:
+    """Módulo 9: recommendation_clicked debe incluir properties.product_id.
+
+    Sin este campo, el CTR por ítem es incalculable porque no sabemos qué
+    producto específico fue clickeado dentro de la lista recomendada.
+    entity_id ya es validado como obligatorio por _REQUIRES_ENTITY_ID.
+    """
+    if payload.event_type != EventType.recommendation_clicked:
+        return
+
+    properties = payload.properties or {}
+    product_id = properties.get("product_id")
+
+    if not isinstance(product_id, str) or not product_id.strip():
+        raise HTTPException(
+            status_code=422,
+            detail=(
+                "recommendation_clicked requiere properties.product_id "
+                "(product_id del ítem clickeado, string no vacío)."
+            ),
+        )
+
+
+def _validate_recommendation_shown(payload: EventCreate) -> None:
+    """Módulo 9: si recommendation_shown incluye product_ids, debe ser lista.
+
+    No se requiere product_ids (el backend lo registra automáticamente desde
+    /recommendations). Pero si el cliente lo envía manualmente, debe ser una
+    lista para que las queries de top-productos funcionen correctamente.
+    """
+    if payload.event_type != EventType.recommendation_shown:
+        return
+
+    properties = payload.properties or {}
+    product_ids = properties.get("product_ids")
+
+    if product_ids is not None and not isinstance(product_ids, list):
+        raise HTTPException(
+            status_code=422,
+            detail="recommendation_shown: properties.product_ids debe ser una lista.",
+        )
+
+
 @router.post("", response_model=EventRead, status_code=201)
 def create_event(
     payload: EventCreate,
@@ -74,6 +117,8 @@ def create_event(
             ),
         )
     _validate_recommendation_feedback(payload)
+    _validate_recommendation_clicked(payload)   # Módulo 9: requiere product_id
+    _validate_recommendation_shown(payload)      # Módulo 9: product_ids debe ser lista si viene
 
     event = Event(
         event_type=payload.event_type,
