@@ -48,6 +48,10 @@ class RecommendationCache:
         """Elimina la entrada si existe."""
         self._store.pop(key, None)
 
+    def clear(self) -> None:
+        """Limpia todas las recomendaciones cacheadas."""
+        self._store.clear()
+
     # ── Generación de keys ─────────────────────────────────────────────
 
     def make_request_key(

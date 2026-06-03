@@ -16,12 +16,13 @@
       <div class="topbar-controls">
         <label class="field">
           <span>API base</span>
-          <input id="apiBaseUrl" type="text" value="http://127.0.0.1:8000" aria-label="URL base de la API">
+          <input id="apiBaseUrl" type="text" value="http://127.0.0.1:8010" aria-label="URL base de la API">
         </label>
         <label class="field inline">
           <input id="debugToggle" type="checkbox">
           <span>Mostrar JSON crudo</span>
         </label>
+        <a href="dashboard.html" class="button secondary" style="text-decoration:none;text-align:center">📊 Dashboard de métricas</a>
       </div>
     </header>
 
@@ -65,6 +66,7 @@
 
         <div id="recommendationsLoading" class="state hidden">Cargando recomendaciones...</div>
         <div id="recommendationsError" class="state error hidden"></div>
+        <div id="feedbackStatus" class="state feedback-state hidden"></div>
         <div id="emptyRecommendations" class="state">No hay recomendaciones todavia.</div>
 
         <div id="recommendationsGrid" class="cards-grid"></div>

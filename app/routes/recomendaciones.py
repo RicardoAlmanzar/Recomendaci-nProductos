@@ -4,6 +4,7 @@ Rutas de Recomendaciones — Módulo 11.
 POST /recommendations  → Genera recomendaciones (con cache)
 GET  /recommendations/{recommendation_id}  → Busca por ID (debugging)
 """
+import logging
 import os
 import uuid
 from datetime import datetime, timezone
@@ -14,6 +15,7 @@ from sqlmodel import Session, select
 from app.db.session import get_session
 from app.engine.cache import cache
 from app.engine.candidates import get_candidates
+from app.engine.feedback import get_feedback_signals
 from app.engine.ranker import RankingContext, rank
 from app.engine.popularity import get_popularity_scores
 from app.models import Cliente, Compra, Regla
@@ -22,6 +24,8 @@ from app.models.recommendation import (
     RecommendationRequest,
     RecommendationResponse,
 )
+from app.models.event import EventType
+from app.services.metrics import register_event
 
 router = APIRouter(prefix="/recommendations", tags=["recommendations"])
 
@@ -44,6 +48,27 @@ def recommend(
     cached = cache.get(request_key)
     if cached is not None:
         cached["cache_hit"] = True
+        # ── Módulo 9: registrar recommendation_shown aunque sea cache-hit ──────────
+        _cached_product_ids = [
+            item["product_id"] for item in cached.get("items", [])
+        ]
+        if _cached_product_ids:  # solo registrar si hay ítems que mostrar
+            register_event(
+                session=session,
+                event_type=EventType.recommendation_shown,
+                customer_id=request.customer_id,
+                session_id=request.session_id,
+                entity_id=cached["recommendation_id"],
+                entity_type="recommendation",
+                properties={
+                    "product_ids": _cached_product_ids,
+                    "item_count": len(_cached_product_ids),
+                    "page_type": request.page_type,
+                    "slot": request.slot,
+                    "algo_version": cached.get("algo_version", ALGO_VERSION),
+                    "cache_hit": True,
+                },
+            )
         return cached
 
     # ── 2. Obtener cliente ──────────────────────────────────────────────
@@ -64,6 +89,11 @@ def recommend(
     popularity_scores = {}
     if len(purchases) == 0:
         popularity_scores = get_popularity_scores(session)
+    feedback_signals = get_feedback_signals(
+        customer_id=request.customer_id,
+        session_id=request.session_id,
+        session=session,
+    )
 
     ranking_context = RankingContext(
         customer=customer,
@@ -71,6 +101,7 @@ def recommend(
         affinity_rules=affinity_rules,
         limit=request.limit,
         popularity_scores=popularity_scores,
+        feedback_signals=feedback_signals,
         page_type=request.page_type,
         slot=request.slot,
         session_id=request.session_id,
@@ -117,6 +148,28 @@ def recommend(
     response_dict["generated_at"] = response.generated_at.isoformat()
     cache.set(request_key, response_dict)
     cache.set(cache.make_id_key(recommendation_id), response_dict)
+
+    # ── Módulo 9: registrar recommendation_shown (denominador de CTR) ───────────
+    # Decisión: no registrar si item_count == 0 para no distorsionar el
+    # denominador. Un response sin ítems no es una impresión de recomendación.
+    _product_ids = [item.product_id for item in items]
+    if _product_ids:
+        register_event(
+            session=session,
+            event_type=EventType.recommendation_shown,
+            customer_id=request.customer_id,
+            session_id=request.session_id,
+            entity_id=recommendation_id,
+            entity_type="recommendation",
+            properties={
+                "product_ids": _product_ids,
+                "item_count": len(_product_ids),
+                "page_type": request.page_type,
+                "slot": request.slot,
+                "algo_version": ALGO_VERSION,
+                "cache_hit": False,
+            },
+        )
 
     return response
 

@@ -2,7 +2,10 @@ from sqlalchemy.engine.url import make_url
 from pydantic import Field
 from pydantic.aliases import AliasChoices
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from sqlalchemy import text
 from sqlmodel import Session, SQLModel, create_engine
+
+from app.models.event import EventType
 
 
 class Settings(BaseSettings):
@@ -29,8 +32,20 @@ connect_args = {"check_same_thread": False} if database_url.get_backend_name() =
 engine = create_engine(database_url_value, echo=True, connect_args=connect_args)
 
 
+def _ensure_postgres_event_enum_values() -> None:
+    if database_url.get_backend_name() != "postgresql":
+        return
+
+    with engine.begin() as connection:
+        for event_type in EventType:
+            connection.execute(
+                text(f"ALTER TYPE eventtype ADD VALUE IF NOT EXISTS '{event_type.value}'")
+            )
+
+
 def init_db() -> None:
     SQLModel.metadata.create_all(engine)
+    _ensure_postgres_event_enum_values()
 
 
 def get_session():

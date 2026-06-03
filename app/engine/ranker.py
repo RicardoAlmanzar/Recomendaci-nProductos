@@ -19,6 +19,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass, field
 from typing import Any, Optional
 
+from app.engine.feedback import FeedbackSignals
 from app.engine.scorer import build_recommendations
 from app.models.cliente import Cliente
 from app.models.compra import Compra
@@ -47,6 +48,7 @@ class RankingContext:
     # Auto-detectado en __post_init__ cuando el cliente no tiene compras.
     is_cold_start: bool = False
     popularity_scores: dict[str, float] = field(default_factory=dict)
+    feedback_signals: FeedbackSignals = field(default_factory=FeedbackSignals)
 
     # Metadatos del request — útiles para estrategias futuras de ranking
     # (ej. ponderar distinto en homepage vs cart, o por slot).
@@ -92,4 +94,5 @@ def rank(
         purchases=context.purchases,
         limit=context.limit,
         popularity_scores=context.popularity_scores,
+        feedback_signals=context.feedback_signals,
     )
