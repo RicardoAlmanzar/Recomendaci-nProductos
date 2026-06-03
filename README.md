@@ -46,18 +46,18 @@ Hoy: reglas + popularidad + co-compra básica (productos comprados juntos).
 Interfaz: función get_candidates(context) → List[product_id].
 Después: agregas similitud por embeddings, candidatos por categoría, etc. Sin tocar el ranker.
 
-Módulo 5: Ranking
+Módulo 5: Ranking ✅
 
 Hoy: tu motor actual de score con boosts por margen y prioridad.
 Interfaz: función rank(candidates, context) → ordered_list.
 Después: lo reemplazas por un modelo learning-to-rank cuando tengas datos suficientes (típicamente 50k-100k eventos de interacción).
 
-Módulo 7: Cold-start
+Módulo 7: Cold-start ✅
 
 Hoy: para usuario nuevo → top productos populares por categoría. Para producto nuevo → recomendarlo en su categoría con boost temporal.
 Es simple pero explícito. La trampa es no pensarlo y que tu sistema no recomiende nada a usuarios nuevos.
 
-Módulo 8: Feedback loop
+Módulo 8: Feedback loop ✅
 
 Hoy: solo capturas implícito (clicks en recomendaciones, gracias al módulo 3).
 Después: agregas explícito (like/hide/no me interesa) cuando el producto lo justifique.
