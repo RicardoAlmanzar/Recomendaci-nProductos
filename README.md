@@ -40,7 +40,7 @@ Por qué ahora: define cómo el frontend consume recomendaciones. Cambiar el con
 
 TIER 2 — Interfaz mínima ahora, profundizar después (meses 3-6)
 Estos los construyes "feos pero funcionales" con la interfaz correcta. Los vas a reemplazar internamente sin que nadie afuera se entere.
-Módulo 4: Generación de candidatos
+Módulo 4: Generación de candidatos ✅
 
 Hoy: reglas + popularidad + co-compra básica (productos comprados juntos).
 Interfaz: función get_candidates(context) → List[product_id].
@@ -65,12 +65,12 @@ La clave: que cada recomendación servida tenga un recommendation_id que puedas 
 
 TIER 3 — Stub o postergar (meses 6-12+)
 Estos los mencionas en la documentación pero no los construyes ahora. Construirlos prematuro es desperdicio.
-Módulo 6: Contexto y personalización avanzada
+Módulo 6: Contexto y personalización avanzada ✅
 
 Hora del día, dispositivo, ubicación geográfica, historial reciente vs largo plazo.
 Por qué postergar: requiere volumen de datos que no vas a tener en los primeros meses. Implementarlo sin datos es teatro.
 
-Módulo 9: Evaluación y métricas
+Módulo 9: Evaluación y métricas ✅
 
 Stub mínimo ahora: dashboard simple con CTR de recomendaciones, conversión, productos más recomendados.
 Postergar: NDCG, recall@k, diversidad, cobertura. Esas métricas tienen sentido cuando tienes un modelo real que evaluar.
