@@ -18,7 +18,7 @@ class RecommendationRequest(SQLModel):
     session_id: Optional[str] = None
     page_type: str          # homepage | product_detail | cart | search
     slot: str               # hero | sidebar | related | you_may_like
-    limit: int = Field(default=10, le=20)  # máximo 20
+    limit: int = Field(default=8, le=20)  # máximo 20
     context: Optional[dict[str, Any]] = None  # ej. {"category": "packaging"}
 
 

@@ -12,7 +12,7 @@ from app.db.session import engine
 from sqlmodel import Session
 from app.models import Cliente
 
-BASE = "http://127.0.0.1:8000"
+BASE = "http://127.0.0.1:8010"
 
 def req(method, path, body=None):
     data = json.dumps(body).encode() if body else None
@@ -94,7 +94,15 @@ class TestIntegrationPhase1(unittest.TestCase):
             self.assertGreater(item.get("score", 0), 0)
             
         # Limpiar db
+        from app.models.event import Event
+        from sqlmodel import select
         with Session(engine) as session:
+            # Primero borrar eventos que hacen referencia al cliente de prueba
+            events = session.exec(select(Event).where(Event.customer_id == cold_id)).all()
+            for e in events:
+                session.delete(e)
+            session.commit()
+
             c = session.get(Cliente, cold_id)
             if c:
                 session.delete(c)

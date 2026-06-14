@@ -18,7 +18,7 @@ from app.engine.candidates import get_candidates
 from app.engine.feedback import get_feedback_signals
 from app.engine.ranker import RankingContext, rank
 from app.engine.popularity import get_popularity_scores
-from app.models import Cliente, Compra, Regla
+from app.models import Cliente, Compra, Regla, Producto
 from app.models.recommendation import (
     RecommendationItem,
     RecommendationRequest,
@@ -43,7 +43,7 @@ def recommend(
     """
     # ── 1. Cache lookup ─────────────────────────────────────────────────
     request_key = cache.make_request_key(
-        request.customer_id, request.session_id, request.page_type, request.slot
+        request.customer_id, request.session_id, request.page_type, request.slot, request.context
     )
     cached = cache.get(request_key)
     if cached is not None:
@@ -84,6 +84,17 @@ def recommend(
     purchases = session.exec(
         select(Compra).where(Compra.customer_id == request.customer_id)
     ).all()
+
+    # Pre-cargar las categorías de los productos comprados para que scorer.py las use
+    # de manera robusta incluso si los candidatos están filtrados por contexto.
+    purchased_product_ids = {p.product_id for p in purchases}
+    if purchased_product_ids:
+        products_db = session.exec(
+            select(Producto).where(Producto.product_id.in_(list(purchased_product_ids)))
+        ).all()
+        cat_map = {p.product_id: p.category for p in products_db}
+        for p in purchases:
+            p.__dict__["category"] = cat_map.get(p.product_id)
 
     # ── Módulo 7: Cold-start popularity ─────────────────────────────────
     popularity_scores = {}

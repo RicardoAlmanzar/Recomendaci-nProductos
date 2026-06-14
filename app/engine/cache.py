@@ -60,9 +60,11 @@ class RecommendationCache:
         session_id: Optional[str],
         page_type: str,
         slot: str,
+        context: Optional[dict[str, Any]] = None,
     ) -> str:
         """Hash determinístico de los parámetros del request."""
-        raw = f"{customer_id}:{session_id or ''}:{page_type}:{slot}"
+        ctx_str = str(sorted(context.items())) if context else ""
+        raw = f"{customer_id}:{session_id or ''}:{page_type}:{slot}:{ctx_str}"
         return hashlib.sha256(raw.encode()).hexdigest()
 
     def make_id_key(self, recommendation_id: str) -> str:

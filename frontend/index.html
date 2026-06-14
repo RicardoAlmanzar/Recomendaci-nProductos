@@ -3,80 +3,124 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Demo de Recomendaciones</title>
+  <title>Tienda - Motor de Recomendaciones</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="app-shell">
-    <header class="topbar">
-      <div>
-        <p class="eyebrow">Sistema de recomendaciones</p>
-        <h1>Demo de usuarios y recomendaciones</h1>
-      </div>
-      <div class="topbar-controls">
-        <label class="field">
-          <span>API base</span>
-          <input id="apiBaseUrl" type="text" value="http://127.0.0.1:8010" aria-label="URL base de la API">
-        </label>
-        <label class="field inline">
-          <input id="debugToggle" type="checkbox">
-          <span>Mostrar JSON crudo</span>
-        </label>
-        <a href="dashboard.html" class="button secondary" style="text-decoration:none;text-align:center">📊 Dashboard de métricas</a>
+  <div class="app-container">
+    <!-- ========== HEADER ========== -->
+    <header class="store-header">
+      <div class="header-content">
+        <div class="logo-section">
+          <h1 class="logo">🛍️ Tienda</h1>
+        </div>
+
+        <div class="search-section">
+          <input id="searchInput" type="text" class="search-input" placeholder="Buscar productos..." autocomplete="off">
+          <button id="searchButton" class="search-button" type="button" aria-label="Buscar productos">🔍</button>
+        </div>
+
+        <div class="customer-selector-wrapper">
+          <div class="customer-selector">
+            <span class="customer-icon">👤</span>
+            <div class="customer-info">
+              <div id="customerSelectorLabel" class="customer-label">Seleccionar cliente</div>
+              <div id="customerSelectorBusiness" class="customer-business">-</div>
+            </div>
+            <span class="dropdown-icon">▼</span>
+          </div>
+          <div id="customerDropdown" class="customer-dropdown hidden">
+            <div id="customerDropdownList" class="customer-dropdown-list"></div>
+          </div>
+        </div>
       </div>
     </header>
 
-    <main class="layout">
-      <section class="panel panel-left">
-        <div class="panel-header">
-          <div>
-            <h2>Usuarios</h2>
-            <p id="usersMeta">Cargando usuarios...</p>
-          </div>
-          <button id="reloadUsersBtn" class="button secondary" type="button">Recargar</button>
+    <!-- ========== MAIN CONTENT ========== -->
+    <main class="store-main">
+      <!-- Sección de Historial de Compras -->
+      <section class="history-section">
+        <div class="section-header">
+          <h2>Basado en tu historial de compras</h2>
+          <p id="historyCount" class="section-subtitle">Cargando...</p>
         </div>
 
-        <div id="usersLoading" class="state">Cargando usuarios...</div>
-        <div id="usersError" class="state error hidden"></div>
-        <ul id="usersList" class="users-list" aria-label="Lista de usuarios"></ul>
+        <div id="historyLoading" class="state-message loading">Cargando historial...</div>
+        <div id="historyError" class="state-message error hidden"></div>
+        <div id="historyEmpty" class="state-message empty">Sin historial de compras.</div>
 
-        <section class="history-panel">
-          <div class="panel-subheader">
-            <div>
-              <h3>Historial del usuario</h3>
-              <p id="historyMeta">Selecciona un usuario para ver lo que compró.</p>
-            </div>
-            <button id="reloadHistoryBtn" class="button secondary" type="button" disabled>Recargar historial</button>
-          </div>
-          <div id="historyLoading" class="state hidden">Cargando historial...</div>
-          <div id="historyError" class="state error hidden"></div>
-          <div id="historyEmpty" class="state">Sin historial todavía.</div>
-          <div id="historyList" class="history-list"></div>
-        </section>
+        <div class="history-carousel">
+          <div id="historyList" class="history-items"></div>
+        </div>
       </section>
 
-      <section class="panel panel-right">
-        <div class="panel-header">
-          <div>
-            <h2>Recomendaciones</h2>
-            <p id="selectedUserMeta">Selecciona un usuario para ver sus recomendaciones.</p>
-          </div>
-          <button id="reloadRecommendationsBtn" class="button secondary" type="button" disabled>Recargar</button>
+      <!-- Sección de Recomendaciones -->
+      <section class="recommendations-section">
+        <div class="section-header">
+          <h2 id="recommendationsTitle">Recomendado para ti</h2>
+          <p id="recommendationsCount" class="section-subtitle">Basado en tu perfil y compras anteriores</p>
         </div>
 
-        <div id="recommendationsLoading" class="state hidden">Cargando recomendaciones...</div>
-        <div id="recommendationsError" class="state error hidden"></div>
-        <div id="feedbackStatus" class="state feedback-state hidden"></div>
-        <div id="emptyRecommendations" class="state">No hay recomendaciones todavia.</div>
+        <div id="recommendationsLoading" class="state-message loading hidden">Cargando recomendaciones...</div>
+        <div id="recommendationsError" class="state-message error hidden"></div>
+        <div id="feedbackStatus" class="state-message feedback-state hidden"></div>
+        <div id="emptyRecommendations" class="state-message empty hidden">Sin recomendaciones disponibles.</div>
 
-        <div id="recommendationsGrid" class="cards-grid"></div>
+        <div id="recommendationsGrid" class="recommendations-grid"></div>
 
-        <section id="debugSection" class="debug hidden" aria-label="JSON crudo">
-          <h3>JSON crudo</h3>
-          <pre id="debugOutput">{}</pre>
-        </section>
+        <div id="relatedRecommendationsBlock" class="related-recommendations hidden">
+          <div class="section-header related-section-header">
+            <h2>También te puede interesar</h2>
+            <p id="relatedRecommendationsCount" class="section-subtitle">Buscando productos relacionados...</p>
+          </div>
+          <div id="relatedRecommendationsEmpty" class="state-message empty hidden">Sin recomendaciones relacionadas.</div>
+          <div id="relatedRecommendationsGrid" class="recommendations-grid"></div>
+        </div>
       </section>
     </main>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="store-footer">
+      <div class="footer-content">
+        <div class="footer-info">
+          <span class="footer-label">Motor de recomendaciones</span>
+          <span id="footerRecommendationId" class="footer-value">—</span>
+        </div>
+        <div class="footer-info">
+          <span class="footer-label">Versión</span>
+          <span id="footerAlgoVersion" class="footer-value">—</span>
+        </div>
+        <div class="footer-info">
+          <span class="footer-label">Estado</span>
+          <span id="footerCacheStatus" class="footer-value">—</span>
+        </div>
+        <div class="footer-divider"></div>
+        <div class="footer-actions">
+          <a href="dashboard.html" class="footer-link">📊 Ver métricas</a>
+        </div>
+      </div>
+    </footer>
+
+    <!-- ========== DEBUG PANEL (Hidden by default) ========== -->
+    <div id="debugPanel" class="debug-panel hidden">
+      <div class="debug-header">
+        <h3>JSON de Respuesta</h3>
+        <button id="debugCloseBtn" class="debug-close">✕</button>
+      </div>
+      <pre id="debugOutput" class="debug-output">{}</pre>
+    </div>
+  </div>
+
+  <!-- ========== CONFIGURACIÓN (Hidden) ========== -->
+  <div id="configPanel" class="config-panel hidden">
+    <label class="config-field">
+      <span>URL de API</span>
+      <input id="apiBaseUrl" type="text" value="http://127.0.0.1:8010" aria-label="URL base de la API">
+    </label>
+    <label class="config-field">
+      <input id="debugToggle" type="checkbox">
+      <span>Mostrar JSON</span>
+    </label>
   </div>
 
   <script src="app.js"></script>

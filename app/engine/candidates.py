@@ -41,15 +41,18 @@ def get_candidates(
     category: str | None = (
         request.context.get("category") if request.context else None
     )
+    
+    # Do not restrict catalog if we are searching for related items
+    filter_category = category if request.page_type != "search" else None
 
     # ── Cold-start: populares reales + strategic_priority ───────────────
     if not has_history:
-        return _cold_start_pool(session, pool_size, category)
+        return _cold_start_pool(session, pool_size, filter_category)
 
     # ── Cliente con historial: catálogo activo ──────────────────────────
     q = select(Producto).where(Producto.active == True)  # noqa: E712
-    if category:
-        q = q.where(Producto.category == category)
+    if filter_category:
+        q = q.where(Producto.category == filter_category)
     candidates = list(session.exec(q).all())
 
     return candidates

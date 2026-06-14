@@ -8,6 +8,7 @@ from app.routes.clientes import router as customers_router, users_router
 from app.routes.recomendaciones import router as recommendations_router
 from app.routes.events import router as events_router
 from app.routes.metrics import router as metrics_router
+from app.routes.productos import router as products_router
 
 
 @asynccontextmanager
@@ -29,6 +30,7 @@ app.include_router(users_router)
 app.include_router(recommendations_router)
 app.include_router(events_router)
 app.include_router(metrics_router)
+app.include_router(products_router)
 
 
 @app.get("/")

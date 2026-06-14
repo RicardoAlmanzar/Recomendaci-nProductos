@@ -1,0 +1,244 @@
+2026-06-07 13:57:45,852 INFO sqlalchemy.engine.Engine select pg_catalog.version()
+2026-06-07 13:57:45,859 INFO sqlalchemy.engine.Engine [raw sql] {}
+2026-06-07 13:57:45,971 INFO sqlalchemy.engine.Engine select current_schema()
+2026-06-07 13:57:45,979 INFO sqlalchemy.engine.Engine [raw sql] {}
+2026-06-07 13:57:46,091 INFO sqlalchemy.engine.Engine show standard_conforming_strings
+2026-06-07 13:57:46,095 INFO sqlalchemy.engine.Engine [raw sql] {}
+2026-06-07 13:57:46,208 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-06-07 13:57:46,219 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-06-07 13:57:46,220 INFO sqlalchemy.engine.Engine [generated in 0.00165s] {'table_name': 'customers', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-06-07 13:57:46,341 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-06-07 13:57:46,346 INFO sqlalchemy.engine.Engine [cached since 0.1278s ago] {'table_name': 'products', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-06-07 13:57:46,403 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-06-07 13:57:46,403 INFO sqlalchemy.engine.Engine [cached since 0.1849s ago] {'table_name': 'purchases', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-06-07 13:57:46,463 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-06-07 13:57:46,463 INFO sqlalchemy.engine.Engine [cached since 0.2449s ago] {'table_name': 'affinity_rules', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-06-07 13:57:46,520 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-06-07 13:57:46,520 INFO sqlalchemy.engine.Engine [cached since 0.3019s ago] {'table_name': 'events', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-06-07 13:57:46,578 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-06-07 13:57:46,579 INFO sqlalchemy.engine.Engine [generated in 0.00125s] {'typname_1': 'eventtype', 'nspname_1': 'pg_catalog'}
+2026-06-07 13:57:46,637 INFO sqlalchemy.engine.Engine COMMIT
+2026-06-07 13:57:46,692 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-06-07 13:57:46,693 INFO sqlalchemy.engine.Engine ALTER TYPE eventtype ADD VALUE IF NOT EXISTS 'product_view'
+2026-06-07 13:57:46,694 INFO sqlalchemy.engine.Engine [generated in 0.00066s] {}
+2026-06-07 13:57:46,814 INFO sqlalchemy.engine.Engine ALTER TYPE eventtype ADD VALUE IF NOT EXISTS 'product_click'
+2026-06-07 13:57:46,814 INFO sqlalchemy.engine.Engine [generated in 0.00093s] {}
+2026-06-07 13:57:46,870 INFO sqlalchemy.engine.Engine ALTER TYPE eventtype ADD VALUE IF NOT EXISTS 'search'
+2026-06-07 13:57:46,871 INFO sqlalchemy.engine.Engine [generated in 0.00098s] {}
+2026-06-07 13:57:46,928 INFO sqlalchemy.engine.Engine ALTER TYPE eventtype ADD VALUE IF NOT EXISTS 'add_to_cart'
+2026-06-07 13:57:46,928 INFO sqlalchemy.engine.Engine [generated in 0.00076s] {}
+2026-06-07 13:57:46,984 INFO sqlalchemy.engine.Engine ALTER TYPE eventtype ADD VALUE IF NOT EXISTS 'purchase'
+2026-06-07 13:57:46,985 INFO sqlalchemy.engine.Engine [generated in 0.00081s] {}
+2026-06-07 13:57:47,042 INFO sqlalchemy.engine.Engine ALTER TYPE eventtype ADD VALUE IF NOT EXISTS 'recommendation_shown'
+2026-06-07 13:57:47,043 INFO sqlalchemy.engine.Engine [generated in 0.00069s] {}
+2026-06-07 13:57:47,100 INFO sqlalchemy.engine.Engine ALTER TYPE eventtype ADD VALUE IF NOT EXISTS 'recommendation_clicked'
+2026-06-07 13:57:47,100 INFO sqlalchemy.engine.Engine [generated in 0.00087s] {}
+2026-06-07 13:57:47,158 INFO sqlalchemy.engine.Engine ALTER TYPE eventtype ADD VALUE IF NOT EXISTS 'recommendation_feedback'
+2026-06-07 13:57:47,159 INFO sqlalchemy.engine.Engine [generated in 0.00093s] {}
+2026-06-07 13:57:47,214 INFO sqlalchemy.engine.Engine COMMIT
+INFO:     127.0.0.1:54219 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54993 - "GET / HTTP/1.1" 200 OK
+2026-06-07 14:01:07,964 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-06-07 14:01:07,977 INFO sqlalchemy.engine.Engine SELECT customers.customer_id, customers.business_type, customers.city, customers.average_order_value, customers.created_at 
+FROM customers
+2026-06-07 14:01:07,978 INFO sqlalchemy.engine.Engine [generated in 0.00090s] {}
+INFO:     127.0.0.1:58192 - "GET /customers HTTP/1.1" 200 OK
+2026-06-07 14:01:09,017 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-06-07 14:01:10,038 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-06-07 14:01:10,041 INFO sqlalchemy.engine.Engine SELECT customers.customer_id AS customers_customer_id, customers.business_type AS customers_business_type, customers.city AS customers_city, customers.average_order_value AS customers_average_order_value, customers.created_at AS customers_created_at 
+FROM customers 
+WHERE customers.customer_id = %(pk_1)s
+2026-06-07 14:01:10,042 INFO sqlalchemy.engine.Engine [generated in 0.00086s] {'pk_1': 'CUST-001'}
+2026-06-07 14:01:10,167 INFO sqlalchemy.engine.Engine SELECT purchases.purchase_id, purchases.customer_id, purchases.product_id, purchases.quantity, purchases.purchased_at, purchases.channel, purchases.city 
+FROM purchases 
+WHERE purchases.customer_id = %(customer_id_1)s
+2026-06-07 14:01:10,168 INFO sqlalchemy.engine.Engine [generated in 0.00085s] {'customer_id_1': 'CUST-001'}
+2026-06-07 14:01:10,233 INFO sqlalchemy.engine.Engine SELECT products.product_id, products.sku, products.name, products.category, products.margin_pct, products.strategic_priority, products.active, products.created_at 
+FROM products
+2026-06-07 14:01:10,234 INFO sqlalchemy.engine.Engine [generated in 0.00080s] {}
+INFO:     127.0.0.1:58192 - "GET /customers/CUST-001/history HTTP/1.1" 200 OK
+2026-06-07 14:01:10,310 INFO sqlalchemy.engine.Engine ROLLBACK
+INFO:     127.0.0.1:58192 - "OPTIONS /recommendations HTTP/1.1" 200 OK
+2026-06-07 14:01:10,359 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-06-07 14:01:10,360 INFO sqlalchemy.engine.Engine SELECT customers.customer_id AS customers_customer_id, customers.business_type AS customers_business_type, customers.city AS customers_city, customers.average_order_value AS customers_average_order_value, customers.created_at AS customers_created_at 
+FROM customers 
+WHERE customers.customer_id = %(pk_1)s
+2026-06-07 14:01:10,361 INFO sqlalchemy.engine.Engine [cached since 0.3199s ago] {'pk_1': 'CUST-001'}
+2026-06-07 14:01:10,474 INFO sqlalchemy.engine.Engine SELECT purchases.purchase_id, purchases.customer_id, purchases.product_id, purchases.quantity, purchases.purchased_at, purchases.channel, purchases.city 
+FROM purchases 
+WHERE purchases.customer_id = %(customer_id_1)s
+2026-06-07 14:01:10,475 INFO sqlalchemy.engine.Engine [cached since 0.3083s ago] {'customer_id_1': 'CUST-001'}
+2026-06-07 14:01:10,533 INFO sqlalchemy.engine.Engine SELECT products.product_id, products.sku, products.name, products.category, products.margin_pct, products.strategic_priority, products.active, products.created_at 
+FROM products 
+WHERE products.active = true
+2026-06-07 14:01:10,533 INFO sqlalchemy.engine.Engine [generated in 0.00076s] {}
+2026-06-07 14:01:10,647 INFO sqlalchemy.engine.Engine SELECT affinity_rules.rule_id, affinity_rules.source_category, affinity_rules.target_category, affinity_rules.weight, affinity_rules.reason_code, affinity_rules.active 
+FROM affinity_rules
+2026-06-07 14:01:10,647 INFO sqlalchemy.engine.Engine [generated in 0.00087s] {}
+2026-06-07 14:01:10,707 INFO sqlalchemy.engine.Engine SELECT purchases.purchase_id, purchases.customer_id, purchases.product_id, purchases.quantity, purchases.purchased_at, purchases.channel, purchases.city 
+FROM purchases 
+WHERE purchases.customer_id = %(customer_id_1)s
+2026-06-07 14:01:10,708 INFO sqlalchemy.engine.Engine [cached since 0.5411s ago] {'customer_id_1': 'CUST-001'}
+2026-06-07 14:01:10,765 INFO sqlalchemy.engine.Engine SELECT products.product_id, products.sku, products.name, products.category, products.margin_pct, products.strategic_priority, products.active, products.created_at 
+FROM products 
+WHERE products.product_id IN (%(product_id_1_1)s, %(product_id_1_2)s, %(product_id_1_3)s, %(product_id_1_4)s, %(product_id_1_5)s, %(product_id_1_6)s)
+2026-06-07 14:01:10,766 INFO sqlalchemy.engine.Engine [generated in 0.00092s] {'product_id_1_1': 'BAG-008', 'product_id_1_2': 'BOX-005', 'product_id_1_3': 'THERM-001', 'product_id_1_4': 'THERM-024', 'product_id_1_5': 'BOX-001', 'product_id_1_6': 'BAG-007'}
+2026-06-07 14:01:10,827 INFO sqlalchemy.engine.Engine SELECT events.event_id, events.event_type, events.customer_id, events.session_id, events.entity_type, events.entity_id, events.properties, events.timestamp, events.schema_version 
+FROM events 
+WHERE events.event_type = %(event_type_1)s AND events.customer_id = %(customer_id_1)s ORDER BY events.timestamp DESC 
+ LIMIT %(param_1)s
+2026-06-07 14:01:10,828 INFO sqlalchemy.engine.Engine [generated in 0.00116s] {'event_type_1': 'recommendation_feedback', 'customer_id_1': 'CUST-001', 'param_1': 500}
+2026-06-07 14:01:10,926 INFO sqlalchemy.engine.Engine INSERT INTO events (event_id, event_type, customer_id, session_id, entity_type, entity_id, properties, timestamp, schema_version) VALUES (%(event_id)s::UUID, %(event_type)s, %(customer_id)s, %(session_id)s, %(entity_type)s, %(entity_id)s, %(properties)s::JSON, %(timestamp)s, %(schema_version)s)
+2026-06-07 14:01:10,927 INFO sqlalchemy.engine.Engine [generated in 0.00134s] {'event_id': UUID('fd43b221-9426-40f1-9392-ebce21b7bbc7'), 'event_type': 'recommendation_shown', 'customer_id': 'CUST-001', 'session_id': None, 'entity_type': 'recommendation', 'entity_id': '7141fcdc-55c2-456f-a609-3217b8b59fe6', 'properties': '{"product_ids": ["LAB-011", "LAB-015", "LAB-010", "LAB-013", "LAB-012", "LAB-009", "LAB-014", "WRAP-040"], "item_count": 8, "page_type": "homepage", "slot": "hero", "algo_version": "rules_v1", "cache_hit": false}', 'timestamp': datetime.datetime(2026, 6, 7, 18, 1, 10, 921993), 'schema_version': 1}
+2026-06-07 14:01:10,998 INFO sqlalchemy.engine.Engine COMMIT
+INFO:     127.0.0.1:58192 - "POST /recommendations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58192 - "OPTIONS /events HTTP/1.1" 200 OK
+2026-06-07 14:01:11,079 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-06-07 14:01:11,080 INFO sqlalchemy.engine.Engine INSERT INTO events (event_id, event_type, customer_id, session_id, entity_type, entity_id, properties, timestamp, schema_version) VALUES (%(event_id)s::UUID, %(event_type)s, %(customer_id)s, %(session_id)s, %(entity_type)s, %(entity_id)s, %(properties)s::JSON, %(timestamp)s, %(schema_version)s)
+2026-06-07 14:01:11,081 INFO sqlalchemy.engine.Engine [cached since 0.155s ago] {'event_id': UUID('2b249f8f-3a71-47eb-9064-86e305e2bb46'), 'event_type': 'recommendation_shown', 'customer_id': 'CUST-001', 'session_id': None, 'entity_type': 'recommendation', 'entity_id': '7141fcdc-55c2-456f-a609-3217b8b59fe6', 'properties': '{"slot": "hero", "page_type": "homepage", "item_count": 8, "items": [{"product_id": "LAB-011", "rank_position": 1, "score": 2.1325}, {"product_id": " ... (277 characters truncated) ... : 6, "score": 2.025}, {"product_id": "LAB-014", "rank_position": 7, "score": 1.9975}, {"product_id": "WRAP-040", "rank_position": 8, "score": 1.32}]}', 'timestamp': datetime.datetime(2026, 6, 7, 18, 1, 11, 78339), 'schema_version': 1}
+2026-06-07 14:01:11,203 INFO sqlalchemy.engine.Engine COMMIT
+2026-06-07 14:01:11,264 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-06-07 14:01:11,267 INFO sqlalchemy.engine.Engine SELECT events.event_id, events.event_type, events.customer_id, events.session_id, events.entity_type, events.entity_id, events.properties, events.timestamp, events.schema_version 
+FROM events 
+WHERE events.event_id = %(pk_1)s::UUID
+2026-06-07 14:01:11,268 INFO sqlalchemy.engine.Engine [generated in 0.00067s] {'pk_1': UUID('2b249f8f-3a71-47eb-9064-86e305e2bb46')}
+INFO:     127.0.0.1:58192 - "POST /events HTTP/1.1" 201 Created
+2026-06-07 14:01:11,382 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-06-07 14:02:55,430 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-06-07 14:02:55,431 INFO sqlalchemy.engine.Engine SELECT customers.customer_id AS customers_customer_id, customers.business_type AS customers_business_type, customers.city AS customers_city, customers.average_order_value AS customers_average_order_value, customers.created_at AS customers_created_at 
+FROM customers 
+WHERE customers.customer_id = %(pk_1)s
+2026-06-07 14:02:55,432 INFO sqlalchemy.engine.Engine [cached since 105.4s ago] {'pk_1': 'CUST-002'}
+2026-06-07 14:02:55,668 INFO sqlalchemy.engine.Engine SELECT purchases.purchase_id, purchases.customer_id, purchases.product_id, purchases.quantity, purchases.purchased_at, purchases.channel, purchases.city 
+FROM purchases 
+WHERE purchases.customer_id = %(customer_id_1)s
+2026-06-07 14:02:55,668 INFO sqlalchemy.engine.Engine [cached since 105.5s ago] {'customer_id_1': 'CUST-002'}
+2026-06-07 14:02:55,774 INFO sqlalchemy.engine.Engine SELECT products.product_id, products.sku, products.name, products.category, products.margin_pct, products.strategic_priority, products.active, products.created_at 
+FROM products
+2026-06-07 14:02:55,774 INFO sqlalchemy.engine.Engine [cached since 105.5s ago] {}
+INFO:     127.0.0.1:61561 - "GET /customers/CUST-002/history HTTP/1.1" 200 OK
+2026-06-07 14:02:55,882 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-06-07 14:02:55,898 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-06-07 14:02:55,899 INFO sqlalchemy.engine.Engine SELECT customers.customer_id AS customers_customer_id, customers.business_type AS customers_business_type, customers.city AS customers_city, customers.average_order_value AS customers_average_order_value, customers.created_at AS customers_created_at 
+FROM customers 
+WHERE customers.customer_id = %(pk_1)s
+2026-06-07 14:02:55,900 INFO sqlalchemy.engine.Engine [cached since 105.9s ago] {'pk_1': 'CUST-002'}
+2026-06-07 14:02:56,020 INFO sqlalchemy.engine.Engine SELECT purchases.purchase_id, purchases.customer_id, purchases.product_id, purchases.quantity, purchases.purchased_at, purchases.channel, purchases.city 
+FROM purchases 
+WHERE purchases.customer_id = %(customer_id_1)s
+2026-06-07 14:02:56,021 INFO sqlalchemy.engine.Engine [cached since 105.9s ago] {'customer_id_1': 'CUST-002'}
+2026-06-07 14:02:56,080 INFO sqlalchemy.engine.Engine SELECT products.product_id, products.sku, products.name, products.category, products.margin_pct, products.strategic_priority, products.active, products.created_at 
+FROM products 
+WHERE products.active = true
+2026-06-07 14:02:56,081 INFO sqlalchemy.engine.Engine [cached since 105.5s ago] {}
+2026-06-07 14:02:56,291 INFO sqlalchemy.engine.Engine SELECT affinity_rules.rule_id, affinity_rules.source_category, affinity_rules.target_category, affinity_rules.weight, affinity_rules.reason_code, affinity_rules.active 
+FROM affinity_rules
+2026-06-07 14:02:56,292 INFO sqlalchemy.engine.Engine [cached since 105.6s ago] {}
+2026-06-07 14:02:56,387 INFO sqlalchemy.engine.Engine SELECT purchases.purchase_id, purchases.customer_id, purchases.product_id, purchases.quantity, purchases.purchased_at, purchases.channel, purchases.city 
+FROM purchases 
+WHERE purchases.customer_id = %(customer_id_1)s
+2026-06-07 14:02:56,388 INFO sqlalchemy.engine.Engine [cached since 106.2s ago] {'customer_id_1': 'CUST-002'}
+2026-06-07 14:02:56,490 INFO sqlalchemy.engine.Engine SELECT products.product_id, products.sku, products.name, products.category, products.margin_pct, products.strategic_priority, products.active, products.created_at 
+FROM products 
+WHERE products.product_id IN (%(product_id_1_1)s, %(product_id_1_2)s, %(product_id_1_3)s, %(product_id_1_4)s, %(product_id_1_5)s, %(product_id_1_6)s, %(product_id_1_7)s, %(product_id_1_8)s, %(product_id_1_9)s)
+2026-06-07 14:02:56,490 INFO sqlalchemy.engine.Engine [cached since 105.7s ago] {'product_id_1_1': 'BOX-003', 'product_id_1_2': 'CUP-001', 'product_id_1_3': 'CUP-016', 'product_id_1_4': 'CUP-018', 'product_id_1_5': 'NAP-019', 'product_id_1_6': 'NAP-001', 'product_id_1_7': 'BOX-004', 'product_id_1_8': 'CUTL-022', 'product_id_1_9': 'BOX-001'}
+2026-06-07 14:02:56,592 INFO sqlalchemy.engine.Engine SELECT events.event_id, events.event_type, events.customer_id, events.session_id, events.entity_type, events.entity_id, events.properties, events.timestamp, events.schema_version 
+FROM events 
+WHERE events.event_type = %(event_type_1)s AND events.customer_id = %(customer_id_1)s ORDER BY events.timestamp DESC 
+ LIMIT %(param_1)s
+2026-06-07 14:02:56,592 INFO sqlalchemy.engine.Engine [cached since 105.8s ago] {'event_type_1': 'recommendation_feedback', 'customer_id_1': 'CUST-002', 'param_1': 500}
+2026-06-07 14:02:56,661 INFO sqlalchemy.engine.Engine INSERT INTO events (event_id, event_type, customer_id, session_id, entity_type, entity_id, properties, timestamp, schema_version) VALUES (%(event_id)s::UUID, %(event_type)s, %(customer_id)s, %(session_id)s, %(entity_type)s, %(entity_id)s, %(properties)s::JSON, %(timestamp)s, %(schema_version)s)
+2026-06-07 14:02:56,662 INFO sqlalchemy.engine.Engine [cached since 105.7s ago] {'event_id': UUID('67fdf2af-92ff-4d62-8958-2fad78eb8587'), 'event_type': 'recommendation_shown', 'customer_id': 'CUST-002', 'session_id': None, 'entity_type': 'recommendation', 'entity_id': 'afddf7f2-94fe-452f-8711-05d28beaeb02', 'properties': '{"product_ids": ["LAB-011", "LAB-015", "LAB-010", "LAB-002", "LAB-013", "LAB-012", "LAB-009", "LAB-014"], "item_count": 8, "page_type": "homepage", "slot": "hero", "algo_version": "rules_v1", "cache_hit": false}', 'timestamp': datetime.datetime(2026, 6, 7, 18, 2, 56, 660742), 'schema_version': 1}
+2026-06-07 14:02:56,796 INFO sqlalchemy.engine.Engine COMMIT
+INFO:     127.0.0.1:61561 - "POST /recommendations HTTP/1.1" 200 OK
+2026-06-07 14:02:56,877 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-06-07 14:02:56,878 INFO sqlalchemy.engine.Engine INSERT INTO events (event_id, event_type, customer_id, session_id, entity_type, entity_id, properties, timestamp, schema_version) VALUES (%(event_id)s::UUID, %(event_type)s, %(customer_id)s, %(session_id)s, %(entity_type)s, %(entity_id)s, %(properties)s::JSON, %(timestamp)s, %(schema_version)s)
+2026-06-07 14:02:56,879 INFO sqlalchemy.engine.Engine [cached since 106s ago] {'event_id': UUID('c9e36f54-f09d-49b8-941c-df636645ab12'), 'event_type': 'recommendation_shown', 'customer_id': 'CUST-002', 'session_id': None, 'entity_type': 'recommendation', 'entity_id': 'afddf7f2-94fe-452f-8711-05d28beaeb02', 'properties': '{"slot": "hero", "page_type": "homepage", "item_count": 8, "items": [{"product_id": "LAB-011", "rank_position": 1, "score": 2.0125}, {"product_id": " ... (277 characters truncated) ...  6, "score": 1.9225}, {"product_id": "LAB-009", "rank_position": 7, "score": 1.905}, {"product_id": "LAB-014", "rank_position": 8, "score": 1.8775}]}', 'timestamp': datetime.datetime(2026, 6, 7, 18, 2, 56, 876923), 'schema_version': 1}
+2026-06-07 14:02:57,000 INFO sqlalchemy.engine.Engine COMMIT
+2026-06-07 14:02:57,067 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-06-07 14:02:57,068 INFO sqlalchemy.engine.Engine SELECT events.event_id, events.event_type, events.customer_id, events.session_id, events.entity_type, events.entity_id, events.properties, events.timestamp, events.schema_version 
+FROM events 
+WHERE events.event_id = %(pk_1)s::UUID
+2026-06-07 14:02:57,069 INFO sqlalchemy.engine.Engine [cached since 105.8s ago] {'pk_1': UUID('c9e36f54-f09d-49b8-941c-df636645ab12')}
+INFO:     127.0.0.1:61561 - "POST /events HTTP/1.1" 201 Created
+2026-06-07 14:02:57,189 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-06-07 14:40:58,343 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-06-07 14:40:58,350 INFO sqlalchemy.engine.Engine SELECT customers.customer_id, customers.business_type, customers.city, customers.average_order_value, customers.created_at 
+FROM customers
+2026-06-07 14:40:58,351 INFO sqlalchemy.engine.Engine [cached since 2390s ago] {}
+INFO:     127.0.0.1:58810 - "GET /customers HTTP/1.1" 200 OK
+2026-06-07 14:40:58,491 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-06-07 14:40:58,600 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-06-07 14:40:58,603 INFO sqlalchemy.engine.Engine SELECT customers.customer_id AS customers_customer_id, customers.business_type AS customers_business_type, customers.city AS customers_city, customers.average_order_value AS customers_average_order_value, customers.created_at AS customers_created_at 
+FROM customers 
+WHERE customers.customer_id = %(pk_1)s
+2026-06-07 14:40:58,604 INFO sqlalchemy.engine.Engine [cached since 2389s ago] {'pk_1': 'CUST-001'}
+2026-06-07 14:40:58,718 INFO sqlalchemy.engine.Engine SELECT purchases.purchase_id, purchases.customer_id, purchases.product_id, purchases.quantity, purchases.purchased_at, purchases.channel, purchases.city 
+FROM purchases 
+WHERE purchases.customer_id = %(customer_id_1)s
+2026-06-07 14:40:58,719 INFO sqlalchemy.engine.Engine [cached since 2389s ago] {'customer_id_1': 'CUST-001'}
+2026-06-07 14:40:58,777 INFO sqlalchemy.engine.Engine SELECT products.product_id, products.sku, products.name, products.category, products.margin_pct, products.strategic_priority, products.active, products.created_at 
+FROM products
+2026-06-07 14:40:58,777 INFO sqlalchemy.engine.Engine [cached since 2389s ago] {}
+INFO:     127.0.0.1:58810 - "GET /customers/CUST-001/history HTTP/1.1" 200 OK
+2026-06-07 14:40:58,843 INFO sqlalchemy.engine.Engine ROLLBACK
+INFO:     127.0.0.1:58810 - "OPTIONS /recommendations HTTP/1.1" 200 OK
+2026-06-07 14:40:58,878 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-06-07 14:40:58,879 INFO sqlalchemy.engine.Engine SELECT customers.customer_id AS customers_customer_id, customers.business_type AS customers_business_type, customers.city AS customers_city, customers.average_order_value AS customers_average_order_value, customers.created_at AS customers_created_at 
+FROM customers 
+WHERE customers.customer_id = %(pk_1)s
+2026-06-07 14:40:58,880 INFO sqlalchemy.engine.Engine [cached since 2389s ago] {'pk_1': 'CUST-001'}
+2026-06-07 14:40:59,004 INFO sqlalchemy.engine.Engine SELECT purchases.purchase_id, purchases.customer_id, purchases.product_id, purchases.quantity, purchases.purchased_at, purchases.channel, purchases.city 
+FROM purchases 
+WHERE purchases.customer_id = %(customer_id_1)s
+2026-06-07 14:40:59,009 INFO sqlalchemy.engine.Engine [cached since 2389s ago] {'customer_id_1': 'CUST-001'}
+2026-06-07 14:40:59,072 INFO sqlalchemy.engine.Engine SELECT products.product_id, products.sku, products.name, products.category, products.margin_pct, products.strategic_priority, products.active, products.created_at 
+FROM products 
+WHERE products.active = true
+2026-06-07 14:40:59,073 INFO sqlalchemy.engine.Engine [cached since 2389s ago] {}
+2026-06-07 14:40:59,148 INFO sqlalchemy.engine.Engine SELECT affinity_rules.rule_id, affinity_rules.source_category, affinity_rules.target_category, affinity_rules.weight, affinity_rules.reason_code, affinity_rules.active 
+FROM affinity_rules
+2026-06-07 14:40:59,149 INFO sqlalchemy.engine.Engine [cached since 2389s ago] {}
+2026-06-07 14:40:59,211 INFO sqlalchemy.engine.Engine SELECT purchases.purchase_id, purchases.customer_id, purchases.product_id, purchases.quantity, purchases.purchased_at, purchases.channel, purchases.city 
+FROM purchases 
+WHERE purchases.customer_id = %(customer_id_1)s
+2026-06-07 14:40:59,212 INFO sqlalchemy.engine.Engine [cached since 2389s ago] {'customer_id_1': 'CUST-001'}
+2026-06-07 14:40:59,274 INFO sqlalchemy.engine.Engine SELECT products.product_id, products.sku, products.name, products.category, products.margin_pct, products.strategic_priority, products.active, products.created_at 
+FROM products 
+WHERE products.product_id IN (%(product_id_1_1)s, %(product_id_1_2)s, %(product_id_1_3)s, %(product_id_1_4)s, %(product_id_1_5)s, %(product_id_1_6)s)
+2026-06-07 14:40:59,275 INFO sqlalchemy.engine.Engine [cached since 2389s ago] {'product_id_1_1': 'BAG-008', 'product_id_1_2': 'BOX-005', 'product_id_1_3': 'THERM-001', 'product_id_1_4': 'THERM-024', 'product_id_1_5': 'BOX-001', 'product_id_1_6': 'BAG-007'}
+2026-06-07 14:40:59,338 INFO sqlalchemy.engine.Engine SELECT events.event_id, events.event_type, events.customer_id, events.session_id, events.entity_type, events.entity_id, events.properties, events.timestamp, events.schema_version 
+FROM events 
+WHERE events.event_type = %(event_type_1)s AND events.customer_id = %(customer_id_1)s ORDER BY events.timestamp DESC 
+ LIMIT %(param_1)s
+2026-06-07 14:40:59,339 INFO sqlalchemy.engine.Engine [cached since 2389s ago] {'event_type_1': 'recommendation_feedback', 'customer_id_1': 'CUST-001', 'param_1': 500}
+2026-06-07 14:40:59,428 INFO sqlalchemy.engine.Engine INSERT INTO events (event_id, event_type, customer_id, session_id, entity_type, entity_id, properties, timestamp, schema_version) VALUES (%(event_id)s::UUID, %(event_type)s, %(customer_id)s, %(session_id)s, %(entity_type)s, %(entity_id)s, %(properties)s::JSON, %(timestamp)s, %(schema_version)s)
+2026-06-07 14:40:59,429 INFO sqlalchemy.engine.Engine [cached since 2389s ago] {'event_id': UUID('100cc7ed-157e-47fc-9395-256f00500384'), 'event_type': 'recommendation_shown', 'customer_id': 'CUST-001', 'session_id': None, 'entity_type': 'recommendation', 'entity_id': 'e6edb97f-cd42-4c2c-8ea0-80ca4e0496e6', 'properties': '{"product_ids": ["LAB-011", "LAB-015", "LAB-010", "LAB-013", "LAB-012", "LAB-009", "LAB-014", "WRAP-040"], "item_count": 8, "page_type": "homepage", "slot": "hero", "algo_version": "rules_v1", "cache_hit": false}', 'timestamp': datetime.datetime(2026, 6, 7, 18, 40, 59, 425763), 'schema_version': 1}
+2026-06-07 14:40:59,494 INFO sqlalchemy.engine.Engine COMMIT
+INFO:     127.0.0.1:58810 - "POST /recommendations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58810 - "OPTIONS /events HTTP/1.1" 200 OK
+2026-06-07 14:40:59,575 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-06-07 14:40:59,577 INFO sqlalchemy.engine.Engine INSERT INTO events (event_id, event_type, customer_id, session_id, entity_type, entity_id, properties, timestamp, schema_version) VALUES (%(event_id)s::UUID, %(event_type)s, %(customer_id)s, %(session_id)s, %(entity_type)s, %(entity_id)s, %(properties)s::JSON, %(timestamp)s, %(schema_version)s)
+2026-06-07 14:40:59,577 INFO sqlalchemy.engine.Engine [cached since 2389s ago] {'event_id': UUID('a4d6af3e-9c59-4257-a3f2-f4c7d9f8bae1'), 'event_type': 'recommendation_shown', 'customer_id': 'CUST-001', 'session_id': None, 'entity_type': 'recommendation', 'entity_id': 'e6edb97f-cd42-4c2c-8ea0-80ca4e0496e6', 'properties': '{"slot": "hero", "page_type": "homepage", "item_count": 8, "items": [{"product_id": "LAB-011", "rank_position": 1, "score": 2.1325}, {"product_id": " ... (277 characters truncated) ... : 6, "score": 2.025}, {"product_id": "LAB-014", "rank_position": 7, "score": 1.9975}, {"product_id": "WRAP-040", "rank_position": 8, "score": 1.32}]}', 'timestamp': datetime.datetime(2026, 6, 7, 18, 40, 59, 574941), 'schema_version': 1}
+2026-06-07 14:40:59,691 INFO sqlalchemy.engine.Engine COMMIT
+2026-06-07 14:40:59,748 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-06-07 14:40:59,749 INFO sqlalchemy.engine.Engine SELECT events.event_id, events.event_type, events.customer_id, events.session_id, events.entity_type, events.entity_id, events.properties, events.timestamp, events.schema_version 
+FROM events 
+WHERE events.event_id = %(pk_1)s::UUID
+2026-06-07 14:40:59,750 INFO sqlalchemy.engine.Engine [cached since 2388s ago] {'pk_1': UUID('a4d6af3e-9c59-4257-a3f2-f4c7d9f8bae1')}
+INFO:     127.0.0.1:58810 - "POST /events HTTP/1.1" 201 Created
+2026-06-07 14:40:59,875 INFO sqlalchemy.engine.Engine ROLLBACK
+INFO:     127.0.0.1:52258 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62808 - "GET /products/search?q=caja HTTP/1.1" 404 Not Found

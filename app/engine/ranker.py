@@ -95,4 +95,5 @@ def rank(
         limit=context.limit,
         popularity_scores=context.popularity_scores,
         feedback_signals=context.feedback_signals,
+        request_context=context.request_context,
     )

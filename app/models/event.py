@@ -3,9 +3,8 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Optional
 
-from sqlalchemy import Index
+from sqlalchemy import Index, JSON
 from sqlmodel import Column, Field, SQLModel
-from sqlalchemy.dialects.postgresql import JSONB
 
 
 # ---------------------------------------------------------------------------
@@ -66,10 +65,10 @@ class Event(SQLModel, table=True):
     # Identificador de la entidad (product_id o recommendation_id del Módulo 11)
     entity_id: Optional[str] = Field(default=None, nullable=True, max_length=255)
 
-    # Metadata libre — almacenada como JSONB en PostgreSQL
+    # Metadata libre — almacenada como JSON
     properties: Optional[Any] = Field(
         default=None,
-        sa_column=Column(JSONB, nullable=True),
+        sa_column=Column(JSON, nullable=True),
     )
 
     # Timestamp UTC — asignado siempre en el servidor

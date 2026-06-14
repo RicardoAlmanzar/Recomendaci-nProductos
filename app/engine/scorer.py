@@ -17,18 +17,32 @@ def build_recommendations(
 	limit: int,
 	popularity_scores: dict[str, float] | None = None,
 	feedback_signals: FeedbackSignals | None = None,
+    request_context: dict | None = None,
 ):
 	if popularity_scores is None:
 		popularity_scores = {}
 	if feedback_signals is None:
 		feedback_signals = FeedbackSignals()
 	purchased_product_ids = {purchase.product_id for purchase in purchases}
-	product_category_by_id = {product.product_id: product.category for product in catalog}
+	# Intentar obtener las categorías directamente desde los objetos compra (pre-cargados por el router)
 	purchased_categories = {
-		product_category_by_id[product_id]
-		for product_id in purchased_product_ids
-		if product_id in product_category_by_id
+		getattr(purchase, "category", None)
+		for purchase in purchases
 	}
+	purchased_categories.discard(None)
+
+	# Fallback si no tienen la categoría seteada (como en mocks de tests unitarios antiguos)
+	if not purchased_categories and len(purchases) > 0:
+		product_category_by_id = {product.product_id: product.category for product in catalog}
+		purchased_categories = {
+			product_category_by_id[product_id]
+			for product_id in purchased_product_ids
+			if product_id in product_category_by_id
+		}
+
+	# ── Añadir category de contexto si existe ───────────────────────────
+	if request_context and "category" in request_context:
+		purchased_categories.add(request_context["category"])
 
 	# ── Detectar cold-start — Módulo 7 ──────────────────────────────────
 	is_cold_start = len(purchased_product_ids) == 0
@@ -92,8 +106,25 @@ def build_recommendations(
 		slot.score += feedback_adjustment
 		slot.reason_codes.update(feedback_signals.reason_codes_for(slot.product.product_id))
 
+	valid_slots = []
+	for slot in score_map.values():
+		if slot.score <= 0:
+			continue
+		
+		# Si tiene historial de compras, debe ser un producto relacionado
+		# (es decir, que tenga un match en regla de afinidad o feedback positivo).
+		# Si no hay reglas de afinidad definidas en el sistema, permitimos recomendar cualquier
+		# producto activo para evitar dejar la lista vacía en escenarios de prueba o sin reglas.
+		# Si es cold-start, no hay historial, por lo que cualquier producto
+		# del catálogo con score > 0 es válido y necesario para recomendar.
+		if not is_cold_start and len(affinity_rules) > 0:
+			if slot.rule_score > 0 or slot.feedback_adjustment > 0:
+				valid_slots.append(slot)
+		else:
+			valid_slots.append(slot)
+
 	recommendations = sorted(
-		[slot for slot in score_map.values() if slot.score > 0],
+		valid_slots,
 		key=lambda slot: slot.score,
 		reverse=True,
 	)[:limit]
