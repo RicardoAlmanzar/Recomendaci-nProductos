@@ -568,17 +568,21 @@
 
     // ── Render ──
     function render(data) {
+      const totals = data.totals ?? {};
+      const rates = data.rates ?? {};
+      const legacy = data.top_recommended_products ?? data.products ?? [];
+
       const d = {
         window_days: data.window_days ?? 30,
         generated_at: data.generated_at ?? null,
-        rec: data.recommendations_served ?? 0,
-        items: data.items_served ?? 0,
-        clicks: data.clicks ?? 0,
-        ctr_item: data.ctr_item ?? 0,
-        ctr_resp: data.ctr_response ?? 0,
-        conv: data.conversions_direct ?? 0,
-        conv_rate: data.conversion_rate_direct ?? 0,
-        products: data.top_recommended_products ?? []
+        rec: data.recommendations_served ?? totals.recommendations_served ?? 0,
+        items: data.items_served ?? totals.items_served ?? 0,
+        clicks: data.clicks ?? totals.clicks ?? 0,
+        ctr_item: data.ctr_item ?? rates.ctr_item ?? 0,
+        ctr_resp: data.ctr_response ?? rates.ctr_response ?? 0,
+        conv: data.conversions_direct ?? totals.conversions_direct ?? 0,
+        conv_rate: data.conversion_rate_direct ?? rates.conversion_rate_direct ?? 0,
+        products: legacy
       };
 
       document.getElementById('lastUpdate').innerHTML = d.generated_at 

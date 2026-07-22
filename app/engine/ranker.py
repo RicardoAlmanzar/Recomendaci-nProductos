@@ -49,6 +49,7 @@ class RankingContext:
     is_cold_start: bool = False
     popularity_scores: dict[str, float] = field(default_factory=dict)
     feedback_signals: FeedbackSignals = field(default_factory=FeedbackSignals)
+    offer_scores: dict[str, float] = field(default_factory=dict)
 
     # Metadatos del request — útiles para estrategias futuras de ranking
     # (ej. ponderar distinto en homepage vs cart, o por slot).
@@ -96,4 +97,5 @@ def rank(
         popularity_scores=context.popularity_scores,
         feedback_signals=context.feedback_signals,
         request_context=context.request_context,
+        offer_scores=context.offer_scores,
     )

@@ -18,11 +18,14 @@ def build_recommendations(
 	popularity_scores: dict[str, float] | None = None,
 	feedback_signals: FeedbackSignals | None = None,
     request_context: dict | None = None,
+    offer_scores: dict[str, float] | None = None,
 ):
 	if popularity_scores is None:
 		popularity_scores = {}
 	if feedback_signals is None:
 		feedback_signals = FeedbackSignals()
+	if offer_scores is None:
+		offer_scores = {}
 	purchased_product_ids = {purchase.product_id for purchase in purchases}
 	# Intentar obtener las categorías directamente desde los objetos compra (pre-cargados por el router)
 	purchased_categories = {
@@ -106,6 +109,14 @@ def build_recommendations(
 		slot.score += feedback_adjustment
 		slot.reason_codes.update(feedback_signals.reason_codes_for(slot.product.product_id))
 
+	for slot in score_map.values():
+		offer_boost = offer_scores.get(slot.product.product_id, 0.0)
+		if offer_boost <= 0:
+			continue
+		slot.offer_boost += offer_boost
+		slot.score += offer_boost
+		slot.reason_codes.add("ACTIVE_OFFER")
+
 	valid_slots = []
 	for slot in score_map.values():
 		if slot.score <= 0:
@@ -143,11 +154,13 @@ def build_recommendations(
 				"newness_boost": round_score(slot.newness_boost),
 				"popularity_boost": round_score(slot.popularity_boost),
 				"feedback_adjustment": round_score(slot.feedback_adjustment),
+				"offer_boost": round_score(slot.offer_boost),
 				"final_score": round_score(slot.score),
 				"formula": (
 					f"{round_score(slot.rule_score):.4f} + {round_score(slot.margin_boost):.4f}"
 					f" + {round_score(slot.strategic_boost):.4f} + {round_score(slot.newness_boost):.4f}"
 					f" + {round_score(slot.popularity_boost):.4f} + {round_score(slot.feedback_adjustment):.4f}"
+					f" + {round_score(slot.offer_boost):.4f}"
 					f" = {round_score(slot.score):.4f}"
 				),
 				"matched_rules": slot.matched_rules,

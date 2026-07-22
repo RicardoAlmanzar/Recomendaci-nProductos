@@ -6,6 +6,8 @@ from sqlalchemy import text
 from sqlmodel import Session, SQLModel, create_engine
 
 from app.models.event import EventType
+from app.models.integration import IntegrationLog, ExternalMapping
+from app.models.audit import AuditLog
 
 
 class Settings(BaseSettings):

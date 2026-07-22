@@ -24,6 +24,7 @@ class ScoreSlot:
 	feedback_adjustment: float = 0.0
 	reason_codes: set[str] = field(default_factory=set)
 	matched_rules: list[dict] = field(default_factory=list)
+	offer_boost: float = 0.0
 
 
 def add_margin_boost(slot: ScoreSlot) -> None:

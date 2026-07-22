@@ -25,6 +25,7 @@ from app.models.recommendation import (
     RecommendationResponse,
 )
 from app.models.event import EventType
+from app.services.campaigns import get_active_offer_scores
 from app.services.metrics import register_event
 
 router = APIRouter(prefix="/recommendations", tags=["recommendations"])
@@ -105,6 +106,8 @@ def recommend(
         session_id=request.session_id,
         session=session,
     )
+    channel = (request.context or {}).get("channel")
+    offer_scores = get_active_offer_scores(session, channel=channel)
 
     ranking_context = RankingContext(
         customer=customer,
@@ -113,6 +116,7 @@ def recommend(
         limit=request.limit,
         popularity_scores=popularity_scores,
         feedback_signals=feedback_signals,
+        offer_scores=offer_scores,
         page_type=request.page_type,
         slot=request.slot,
         session_id=request.session_id,

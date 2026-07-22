@@ -409,3 +409,37 @@ def compute_metrics(
             "conversion_rate_direct": 0.0,
             "top_recommended_products": [],
         }
+
+
+def build_metrics_summary(
+    db: Session,
+    window_days: int = 30,
+    top_n: int = 10,
+) -> dict:
+    """Devuelve un resumen más estructurado y listo para UI/admin."""
+    metrics = compute_metrics(db, window_days=window_days, top_n=top_n)
+    return {
+        "window_days": metrics.get("window_days", window_days),
+        "generated_at": metrics.get("generated_at"),
+        "status": "ok",
+        # Compatibilidad con consumidores que esperan claves planas.
+        "recommendations_served": metrics.get("recommendations_served", 0),
+        "items_served": metrics.get("items_served", 0),
+        "clicks": metrics.get("clicks", 0),
+        "ctr_item": metrics.get("ctr_item", 0.0),
+        "ctr_response": metrics.get("ctr_response", 0.0),
+        "conversions_direct": metrics.get("conversions_direct", 0),
+        "conversion_rate_direct": metrics.get("conversion_rate_direct", 0.0),
+        "totals": {
+            "recommendations_served": metrics.get("recommendations_served", 0),
+            "items_served": metrics.get("items_served", 0),
+            "clicks": metrics.get("clicks", 0),
+            "conversions_direct": metrics.get("conversions_direct", 0),
+        },
+        "rates": {
+            "ctr_item": metrics.get("ctr_item", 0.0),
+            "ctr_response": metrics.get("ctr_response", 0.0),
+            "conversion_rate_direct": metrics.get("conversion_rate_direct", 0.0),
+        },
+        "top_recommended_products": metrics.get("top_recommended_products", []),
+    }

@@ -20,6 +20,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app.models.event import Event, EventType
 from app.services.metrics import (
+    build_metrics_summary,
     compute_metrics,
     get_conversion_rate,
     get_ctr_per_item,
@@ -449,6 +450,21 @@ class TestTemporalWindow(unittest.TestCase):
 # ─────────────────────────────────────────────────────────────────────────────
 
 class TestComputeMetrics(unittest.TestCase):
+
+    def test_build_metrics_summary_exposes_dashboard_payload(self):
+        """build_metrics_summary devuelve un resumen compacto para el dashboard."""
+        db = MagicMock()
+        db.exec.return_value.all.return_value = []
+
+        result = build_metrics_summary(db, window_days=14, top_n=5)
+
+        self.assertEqual(result["window_days"], 14)
+        self.assertIn("status", result)
+        self.assertEqual(result["status"], "ok")
+        self.assertIn("totals", result)
+        self.assertIn("rates", result)
+        self.assertEqual(result["totals"]["recommendations_served"], 0)
+        self.assertEqual(result["top_recommended_products"], [])
 
     def test_returns_zeros_when_no_events(self):
         """compute_metrics retorna estructura segura con ceros si no hay eventos."""
