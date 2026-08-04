@@ -6,3 +6,6 @@ python-dotenv
 pydantic-settings
 httpx
 PyJWT
+redis
+rq
+apscheduler

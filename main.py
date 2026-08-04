@@ -16,12 +16,16 @@ from app.db.session import engine
 from sqlmodel import Session
 
 
+from app.core.scheduler import start_scheduler, shutdown_scheduler
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
     with Session(engine) as session:
         ensure_default_admin(session)
+    start_scheduler()
     yield
+    shutdown_scheduler()
 
 
 from app.routes.webhooks import router as webhooks_router
@@ -40,8 +44,14 @@ app.add_middleware(
     allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allow_headers=["Authorization", "Content-Type"],
+    allow_headers=["Authorization", "Content-Type", "X-Request-ID"],
 )
+
+from app.core.telemetry import TraceabilityMiddleware
+from app.core.tenant import TenantMiddleware
+
+app.add_middleware(TraceabilityMiddleware)
+app.add_middleware(TenantMiddleware)
 
 # Cabeceras de seguridad básicas (Helmet-like)
 @app.middleware("http")

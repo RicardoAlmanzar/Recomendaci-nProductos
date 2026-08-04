@@ -11,6 +11,7 @@ class IntegrationLog(SQLModel, table=True):
     event_type: str
     payload: str
     status: str = Field(default="pending", index=True)
+    tenant_id: Optional[str] = Field(default=None, index=True)
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
@@ -22,4 +23,16 @@ class ExternalMapping(SQLModel, table=True):
     external_id: str = Field(index=True)
     internal_id: str = Field(index=True)
     provider: str = Field(index=True)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class FailedJobLog(SQLModel, table=True):
+    __tablename__ = "failed_job_logs"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    job_id: str = Field(index=True)
+    queue_name: str
+    payload: str
+    error_message: str
+    traceback: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
